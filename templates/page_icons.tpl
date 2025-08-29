@@ -33,7 +33,7 @@
 			{/if}
 		{/if}
 
-		{if ($structureInfo.structure_id) && ($gStructure->mInfo.creator_user_id == $gBitUser->mUserId || $gContent->hasUserPermission( 'p_wiki_admin_book' ))}
+		{if !empty($structureInfo.structure_id) && ($gStructure->mInfo.creator_user_id == $gBitUser->mUserId || $gContent->hasUserPermission( 'p_wiki_admin_book' ))}
 			<a href="{$smarty.const.WIKI_PKG_URL}edit_book.php?structure_id={$structureInfo.structure_id}">{booticon iname="fa-gears" iexplain="Edit book"}</a>
 		{elseif is_a($gContent,'BitBook') && $gContent->hasUpdatePermission()}
 			<a href="{$smarty.const.WIKI_PKG_URL}edit_book.php?content_id={$gContent->mContentId}">{booticon iname="fa-gears" iexplain="Edit book"}</a>
@@ -78,14 +78,14 @@
 				  <span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu pull-right">
-					{foreach key=contentId item=backPage from=$backlinks}
-						<li><a href="{$smarty.const.BIT_ROOT_URL}index.php?content_id={$contentId}">{$backPage|escape|truncate:30:"&hellip":true}</a></li>
+					{foreach item=backPage from=$backlinks}
+						<li><a href="{$smarty.const.BIT_ROOT_URL}{$backPage.url}">{$backPage.title|escape|truncate:30:"&hellip;":true}</a></li>
 					{/foreach}
 				</ul>
 			  </div>
 		{/if}
 
-		{if $showstructs && (count($showstructs) gt 0)}
+		{if !empty($showstructs) && count($showstructs) gt 0}
 			<select id="sel-structures" name="page" onchange="javascript:BitBase.go(this)">
 				<option value="">{tr}Wiki Books{/tr} &hellip;</option>
 				{section name=struct loop=$showstructs}

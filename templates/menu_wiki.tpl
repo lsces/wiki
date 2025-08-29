@@ -1,5 +1,5 @@
 {strip}
-{if $packageMenuTitle}<a class="dropdown-toggle" data-toggle="dropdown" href="#"> {tr}{$packageMenuTitle}{/tr} <b class="caret"></b></a>{/if}
+{if !empty($packageMenuTitle)}<a class="dropdown-toggle" data-toggle="dropdown" href="#"> {tr}{$packageMenuTitle}{/tr} <b class="caret"></b></a>{/if}
 <ul class="{$packageMenuClass}">
 	{if $gBitUser->hasPermission( 'p_wiki_view_page' )}
 		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}index.php">{booticon iname="fa-house" iexplain="`$smarty.const.WIKI_PKG_DIR|ucwords` Home" ilocation=menu}</a></li>

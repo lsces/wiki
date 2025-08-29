@@ -5,9 +5,9 @@
 		<h1>
 			{* this weird dual assign thing is cause smarty wont interpret backticks to object in assign tag - spiderr *}
 			{assign var=conDescr value=$gContent->getContentTypeName()}
-			{if $pageInfo.page_id}
+			{if $gContent->mInfo.page_id|default:false}
 				{assign var=editLabel value="{tr}Edit{/tr} $conDescr"}
-				{tr}{tr}Edit{/tr} {$pageInfo.original_title}{/tr}
+				{tr}{tr}Edit{/tr} {$gContent->mInfo.original_title|default:$gContent->mInfo.title}{/tr}
 			{else}
 				{assign var=editLabel value="{tr}Create{/tr} $conDescr"}
 				{tr}{$editLabel}{/tr}
@@ -16,8 +16,8 @@
 	</div>
 
 	{* Check to see if there is an editing conflict *}
-	{if $errors.edit_conflict}
-		<script>/* <![CDATA[ */
+	{if $errors.edit_conflict|default:false}
+		<script nonce={$cspNonce}>/* <![CDATA[ */
 			alert( "{$errors.edit_conflict|strip_tags}" );
 		/* ]]> */</script>
 		{formfeedback warning=$errors.edit_conflict}
@@ -41,9 +41,9 @@
 			</div>
 		{/if}
 
-		{if $preview}
-			{if $pageInfo.edit_section == 1 }
-					<h2>{tr}Preview Section {$pageInfo.section} of: {$title}{/tr}</h2>
+		{if !empty($preview)}
+			{if $gContent->mInfo.edit_section == 1 }
+					<h2>{tr}Preview Section {$gContent->mInfo.section} of: {$title}{/tr}</h2>
 			{else}
 					<h2>{tr}Preview {$title}{/tr}</h2>
 			{/if}
@@ -61,17 +61,19 @@
 			{jstabs}
 				{jstab title="Body"}
 					{legend legend="`$editLabel` Body"}
-						<input type="hidden" name="page_id" value="{$pageInfo.page_id}" />
-						<input type="hidden" name="content_id" value="{$pageInfo.content_id}" />
+						<input type="hidden" name="page_id" value="{$gContent->mInfo.page_id|default:''}" />
+						<input type="hidden" name="content_id" value="{$gContent->mInfo.content_id|default:''}" />
 
 						<div class="form-group">
-							{formfeedback warning=$errors.title}
+							{if !empty($errors.title)}
+								{formfeedback warning=$errors.title}
+							{/if}
 							{formlabel label="$conDescr Title"}
 							{forminput}
-								{if $gBitUser->hasPermission( 'p_wiki_rename_page' ) || !$pageInfo.page_id}
-									<input type="text" class="form-control" maxlength="200" name="title" id="title" value="{$pageInfo.title|escape}" />
+								{if $gBitUser->hasPermission( 'p_wiki_rename_page' ) or !$gContent->mInfo.page_id}
+									<input type="text" class="form-control" maxlength="200" name="title" id="title" value="{$gContent->mInfo.title|default:$pageInfo.title|escape}" />
 								{else}
-									{$page} {$pageInfo.title|escape}
+									{$page} {$gContent->mInfo.title|default:''|escape}
 								{/if}
 							{/forminput}
 						</div>
@@ -80,25 +82,21 @@
 							<div class="form-group">
 								{formlabel label="Summary" for="summary"}
 								{forminput}
-									<input type="text" class="form-control" name="summary" id="summary" value="{$pageInfo.summary|escape:html}" />
+									<input type="text" class="form-control" name="summary" id="summary" value="{$gContent->mInfo.summary|default:''|escape:html}" />
 									{formhelp note="Brief description of the page. This is visible when you hover over a link to this page and just below the title of the wiki page."}
 								{/forminput}
 							</div>
 						{/if}
 
-							<div class="form-group">
-								{formlabel label="Meta Tags" for="metatags"}
-								{forminput}
-									<textarea class="form-control" name="metatags" id="metatags" rows="5">{$pageInfo.metatags|escape:html}</textarea>
-									{formhelp note="Meta data to be inserted on page display. Useful for Opengraph tags."}
-								{/forminput}
-							</div>
-
-						{if $pageInfo.edit_section == 1}
-							<input type="hidden" name="section" value="{$pageInfo.section}" />
+						{if $gContent->mInfo.edit_section|default:0 == 1}
+							<input type="hidden" name="section" value="{$gContent->mInfo.section}" />
 						{/if}
 
-						{textarea edit=$pageInfo.data formatguid=$pageInfo.format_guid langcode=$pageInfo.lang_code}
+						{if !empty($gContent->mInfo.data)}
+							{textarea edit=$gContent->mInfo.data formatguid=$gContent->mInfo.format_guid langcode=$gContent->mInfo.lang_code}
+						{else}
+							{textarea edit=''}
+						{/if}
 
 						{if $footnote}
 							<div class="form-group">
@@ -114,7 +112,7 @@
 							<div class="form-group">
 								{formlabel label="Comment" for="edit_comment"}
 								{forminput}
-									<input type="text" class="form-control" name="edit_comment" id="edit_comment" value="{$pageInfo.edit_comment}" />
+									<input type="text" class="form-control" name="edit_comment" id="edit_comment" value="{$gContent->mInfo.edit_comment|default:''}" />
 									{formhelp note="Add a comment to illustrate your most recent changes."}
 								{/forminput}
 							</div>
@@ -123,7 +121,7 @@
 						{if $gBitUser->hasPermission( 'p_wiki_save_minor' )}
 							<div class="form-group">
 								{forminput label="checkbox"}
-									<input type="checkbox" name="isminor" id="isminor" value="on" {if $pageInfo.isminor}checked="checked" {/if}/>Minor save
+									<input type="checkbox" name="isminor" id="isminor" value="on" {if isset($gContent->mInfo.isminor)}checked="checked" {/if}/>Minor save
 									{formhelp note="This will prevent the generation of a new version. You can use this, if your changes are minor."}
 								{/forminput}
 							</div>
@@ -141,7 +139,7 @@
 
 				{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_tab_tpl"}
 
-				{if $gBitSystem->isFeatureActive( 'wiki_attachments' ) && $gBitUser->hasPermission('p_liberty_attach_attachments')}
+				{if $gBitSystem->isFeatureActive( 'wiki_attachments' ) and $gBitUser->hasPermission('p_liberty_attach_attachments')}
 					{jstab title="Attachments"}
 						{legend legend="Attachments"}
 							{include file="bitpackage:liberty/edit_storage.tpl"}
@@ -219,7 +217,7 @@
 								<tr><td>
 									{tr}Import file{/tr}:</td><td>
 									<input name="userfile1" type="file" />
-									{ * <a href="{$smarty.const.WIKI_PKG_URL}export_wiki_pages.php?page_id={$pageInfo.page_id}&amp;all=1">{tr}export all versions{/tr}</a> * }
+									{ * <a href="{$smarty.const.WIKI_PKG_URL}export_wiki_pages.php?page_id={$gContent->mInfo.page_id}&amp;all=1">{tr}export all versions{/tr}</a> * }
 								</td></tr>
 							{/if} { * end upload file row * }
 						*}

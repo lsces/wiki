@@ -36,7 +36,7 @@
 		{if $diff2 eq 'y'}
 			<h2>{tr}Differences from version{/tr} {$version_from} to {$version_to}</h2>
 			
-			{if $pageInfo.format_guid eq 'bithtml'}
+			{if $gContent->mInfo.format_guid eq 'bithtml'}
 				{$diffdata|html_entity_decode}
 			{else}
 				{$diffdata}
