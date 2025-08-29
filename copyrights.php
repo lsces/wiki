@@ -13,12 +13,13 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
-$gBitSystem->isFeatureActive( 'wiki_copyrights', tra("The copyright management feature is not enabled.") );
+require_once '../kernel/includes/setup_inc.php';
+use Bitweaver\KernelTools;
+$gBitSystem->isFeatureActive( 'wiki_copyrights', KernelTools::tra("The copyright management feature is not enabled.") );
 
 $gBitUser->hasPermission( 'p_wiki_edit_copyright' );
-require_once( WIKI_PKG_INCLUDE_PATH.'copyrights_lib.php' );
-require_once( WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php' );
+require_once WIKI_PKG_INCLUDE_PATH.'copyrights_lib.php';
+require_once WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php';
 
 if (isset($_REQUEST['addcopyright'])) {
 	if ($gBitSystem->isFeatureActive( 'wiki_copyrights' ) && isset($_REQUEST['copyrightTitle']) && isset($_REQUEST['copyrightYear'])
@@ -28,8 +29,8 @@ if (isset($_REQUEST['addcopyright'])) {
 		$copyrightAuthors = $_REQUEST['copyrightAuthors'];
 		$copyrightslib->add_copyright($gContent->mPageId, $copyrightTitle, $copyrightYear, $copyrightAuthors, $gBitUser->mUserId);
 	} else {
-		$gBitSmarty->assign('msg', tra("You must supply all the information, including title and year."));
-		$gBitSystem->display( 'error.tpl' , NULL, array( 'display_mode' => 'display' ));
+		$gBitSmarty->assign('msg', KernelTools::tra("You must supply all the information, including title and year."));
+		$gBitSystem->display( 'error.tpl' , null, [ 'display_mode' => 'display' ]);
 		die;
 	}
 }
@@ -42,22 +43,25 @@ if (isset($_REQUEST['editcopyright'])) {
 		$copyrightAuthors = $_REQUEST['copyrightAuthors'];
 		$copyrightslib->edit_copyright($copyright_id, $copyrightTitle, $copyrightYear, $copyrightAuthors, $gBitUser->mUserId);
 	} else {
-		$gBitSmarty->assign('msg', tra("You must supply all the information, including title and year."));
-		$gBitSystem->display( 'error.tpl' , NULL, array( 'display_mode' => 'display' ));
+		$gBitSmarty->assign('msg', KernelTools::tra("You must supply all the information, including title and year."));
+		$gBitSystem->display( 'error.tpl' , null, array( 'display_mode' => 'display' ));
 		die;
 	}
 }
-if (isset($_REQUEST['action']) && isset($_REQUEST['copyright_id'])) {
-	if ($_REQUEST['action'] == 'up') {
-		$copyrightslib->up_copyright($_REQUEST['copyright_id']);
-	} elseif ($_REQUEST['action'] == 'down') {
-		$copyrightslib->down_copyright($_REQUEST['copyright_id']);
-	} elseif ($_REQUEST['action'] == 'delete') {
-		$copyrightslib->remove_copyright($_REQUEST['copyright_id']);
+if (isset($_REQUEST['action']) && isset($_REQUEST['copyright_id'] ) ) {
+	switch ($_REQUEST['action']) {
+		case 'up':
+			$copyrightslib->up_copyright($_REQUEST['copyright_id'] );
+		break;
+		case 'down':
+			$copyrightslib->down_copyright($_REQUEST['copyright_id'] );
+		break;
+		case 'delete':
+			$copyrightslib->remove_copyright($_REQUEST['copyright_id'] );
+		break;
 	}
 }
 $copyrights = $copyrightslib->list_copyrights( $gContent->mPageId );
 $gBitSmarty->assign('copyrights', $copyrights["data"]);
 // Display the template
-$gBitSystem->display( 'bitpackage:wiki/copyrights.tpl', NULL, array( 'display_mode' => 'display' ));
-?>
+$gBitSystem->display( 'bitpackage:wiki/copyrights.tpl', null, [ 'display_mode' => 'display' ] );

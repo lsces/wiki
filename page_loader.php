@@ -13,8 +13,8 @@
 /**
  * required setup
  */
-include_once( '../../kernel/includes/setup_inc.php' );
-include_once (HTML_PKG_INCLUDE_PATH.'htmlpages_lib.php');
+include_once '../../kernel/includes/setup_inc.php';
+include_once HTML_PKG_INCLUDE_PATH.'htmlpages_lib.php';
 $refresh = 1000 * $_REQUEST["refresh"];
 ?>
 <html>
@@ -22,7 +22,7 @@ $refresh = 1000 * $_REQUEST["refresh"];
 		<script type = 'text/javascript'>
 		<?php
 		$zones = $htmlpageslib->list_html_page_content($_REQUEST["title"], 0, -1, 'zone_asc', '');
-		$cmds = array();
+		$cmds = [];
 		for ($i = 0; $i < count($zones["data"]); $i++) {
 			$cmd = 'top.document.getElementById("' . $zones["data"][$i]["zone"] . '").innerHTML="' . $zones["data"][$i]["content"] . '";';
 			echo $cmd;

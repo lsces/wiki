@@ -13,8 +13,8 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
-include_once( WIKI_PKG_CLASS_PATH.'BitBook.php');
+require_once '../kernel/includes/setup_inc.php';
+use Bitweaver\Wiki\BitBook;
 
 // verify stuff
 $gBitSystem->verifyPackage( 'wiki' );
@@ -22,16 +22,16 @@ $gBitSystem->verifyPermission( 'p_wiki_list_pages' );
 
 $book = new BitBook();
 
-$listHash = array();
+$listHash = [];
 $listHash['content_type_guid'] = BITBOOK_CONTENT_TYPE_GUID;
 $channels = $book->getList( $listHash );
 
 $cant_pages = ceil($channels["cant"] / $listHash['max_records']);
-$gBitSmarty->assignByRef('cant_pages', $cant_pages);
-$gBitSmarty->assign('actual_page', 1 + ($listHash['offset'] / $listHash['max_records']));
+$gBitSmarty->assign('cant_pages', $cant_pages);
+$gBitSmarty->assign('actual_page', 1 + $listHash['offset'] / $listHash['max_records'] );
 
 if ($channels["cant"] > ($listHash['offset'] + $listHash['max_records'])) {
-	$gBitSmarty->assign('next_offset', $listHash['offset'] + $listHash['max_records']);
+	$gBitSmarty->assign('next_offset', $listHash['offset'] + $listHash['max_records'] );
 } else {
 	$gBitSmarty->assign('next_offset', -1);
 }
@@ -43,8 +43,6 @@ if ($listHash['offset'] > 0) {
 	$gBitSmarty->assign('prev_offset', -1);
 }
 
-$gBitSmarty->assignByRef('channels', $channels["data"]);
+$gBitSmarty->assign('channels', $channels["data"]);
 
-$gBitSystem->display( 'bitpackage:wiki/list_books.tpl', NULL, array( 'display_mode' => 'display' ));
-
-?>
+$gBitSystem->display( 'bitpackage:wiki/list_books.tpl', null, array( 'display_mode' => 'display' ));

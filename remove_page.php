@@ -13,14 +13,15 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
-include_once( WIKI_PKG_CLASS_PATH.'BitPage.php');
-include_once( WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php' );
+require_once '../kernel/includes/setup_inc.php';
+use Bitweaver\KernelTools;
+
+include_once WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php';
 
 $gBitSystem->verifyPackage( 'wiki' );
 
 if( !$gContent->isValid() ) {
-	$gBitSystem->fatalError( tra( "No page indicated" ));
+	$gBitSystem->fatalError( KernelTools::tra( "No page indicated" ) );
 }
 
 $gContent->verifyUserPermission( 'p_wiki_remove_page' );
@@ -30,19 +31,17 @@ if( isset( $_REQUEST["confirm"] ) ) {
 		header( "location: ".WIKI_PKG_URL );
 		die;
 	} else {
-		$gBitSystem->fatalError( tra("There was an error deleting the page:") . ' ' . vc( $gContent->mErrors ));
+		$gBitSystem->fatalError( KernelTools::tra("There was an error deleting the page:") . ' ' . \Bitweaver\vc( $gContent->mErrors ));
 	}
 }
 
-$gBitSystem->setBrowserTitle( tra( 'Confirm delete of: ' ).$gContent->getTitle() );
-$formHash['remove'] = TRUE;
+$gBitSystem->setBrowserTitle( KernelTools::tra( 'Confirm delete of: ' ).$gContent->getTitle() );
+$formHash['remove'] = true;
 $formHash['page_id'] = $_REQUEST['page_id'];
-$msgHash = array(
-	'label' => tra( 'Delete WikiPage' ),
+$msgHash = [
+	'label' => KernelTools::tra( 'Delete WikiPage' ),
 	'confirm_item' => $gContent->getTitle(),
-	'warning' => tra( 'All previous versions of this page will be completely deleted.' ),
-	'error' => tra( 'This cannot be undone!' ),
-);
+	'warning' => KernelTools::tra( 'All previous versions of this page will be completely deleted.' ),
+	'error' => KernelTools::tra( 'This cannot be undone!' ),
+];
 $gBitSystem->confirmDialog( $formHash,$msgHash );
-
-?>

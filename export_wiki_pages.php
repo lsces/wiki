@@ -13,9 +13,9 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
-include_once( UTIL_PKG_INCLUDE_PATH.'zip_lib.php' );
-include_once( WIKI_PKG_INCLUDE_PATH.'export_lib.php' );
+require_once '../kernel/includes/setup_inc.php';
+include_once UTIL_PKG_INCLUDE_PATH.'zip_lib.php';
+include_once WIKI_PKG_INCLUDE_PATH.'export_lib.php';
 if (!$gBitUser->hasPermission( 'p_wiki_admin' ))
 	die;
 if (!isset($_REQUEST["page_id"])) {
@@ -23,14 +23,10 @@ if (!isset($_REQUEST["page_id"])) {
 	$exportlib->MakeWikiZip( TEMP_PKG_PATH.$exportName );
 	header ("location: ".TEMP_PKG_URL.$exportName );
 } else {
-	if (isset($_REQUEST["all"]))
-		$all = 0;
-	else
-		$all = 1;
+	$all = isset($_REQUEST["all"]) ? 0 : 1;
 	$data = $exportlib->export_wiki_page($_REQUEST["page_id"], $all);
 	$pageId = $_REQUEST["page_id"];
 	header ("Content-type: application/unknown");
 	header ("Content-Disposition: inline; filename=$pageId");
 	echo $data;
 }
-?>

@@ -13,17 +13,17 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
+require_once '../kernel/includes/setup_inc.php';
+use \Bitweaver\BitBase;
+use \Bitweaver\Liberty\LibertyStructure;
+use \Bitweaver\Wiki\BitBook;
+use \Bitweaver\Wiki\BitPage;
 
-if( isset( $_COOKIE['book_section'] ) && $_COOKIE['book_section'] == 'o' ) {
-	$book_section = 'block';
-} else {
-	$book_section = 'none';
-}
+$book_section = isset( $_COOKIE['book_section'] ) && $_COOKIE['book_section'] == 'o'
+	? $book_section = 'block'
+	: 'none';
+
 $gBitSmarty->assign( 'book_section',$book_section );
-
-include_once( LIBERTY_PKG_CLASS_PATH.'LibertyStructure.php');
-include_once( WIKI_PKG_CLASS_PATH.'BitBook.php');
 
 global $gStructure;
 
@@ -33,15 +33,15 @@ global $gStructure;
  **/
 // get a book instance
 global $gContent;
-if( BitBase::verifyIdParameter( $_REQUEST, 'structure_id' ) || BitBase::verifyIdParameter( $_REQUEST, 'content_id' ) ) {
-	include_once( LIBERTY_PKG_INCLUDE_PATH.'lookup_content_inc.php' );
+if( BitBase::verifyId( $_REQUEST["structure_id"] ) || BitBase::verifyId( $_REQUEST["content_id"] ) ) {
+	include_once LIBERTY_PKG_INCLUDE_PATH.'lookup_content_inc.php';
 	if( empty( $gContent ) ){
 		$gBitSystem->fatalError( 'Error: Invalid structure id, the book you requested could not be found.' );
 	} elseif( empty( $_REQUEST["structure_id"] ) ) {
 		// we were passed a valid content_id. Make sure the root node exists, and if not, create it.
 		$newStructure = new LibertyStructure();
 		// alias => '' is a temporary setting until alias stuff has been removed
-		if( !$node = $newStructure->getNode( NULL, $gContent->mContentId ) ) {
+		if( !$node = $newStructure->getNode( -2, $gContent->mContentId ) ) {
 			$structureHash = array( 'content_id' => $gContent->mContentId, 'alias' => '' );
 			$_REQUEST["structure_id"] = $newStructure->storeNode( $structureHash );
 		} else {
@@ -71,7 +71,7 @@ if( $gContent->isValid() ){
 if( isset($_REQUEST["createstructure"]) ) {
 	if ((empty($_REQUEST['name']))) {
 		$gBitSmarty->assign('msg', tra("You must specify a name."));
-		$gBitSystem->display( 'error.tpl' , NULL, array( 'display_mode' => 'edit' ));
+		$gBitSystem->display( 'error.tpl' , null, array( 'display_mode' => 'edit' ));
 		die;
 	}
 
@@ -95,7 +95,7 @@ if( isset($_REQUEST["createstructure"]) ) {
 		//Cannot create a structure if a structure already exists
 		if (!isset($structure_id)) {
 			$gBitSmarty->assign('msg', $_REQUEST['name'] . " " . tra("page not added (Exists)"));
-			$gBitSystem->display( 'error.tpl' , NULL, array( 'display_mode' => 'edit' ));
+			$gBitSystem->display( 'error.tpl' , null, array( 'display_mode' => 'edit' ));
 			die;
 		}
 
@@ -118,16 +118,16 @@ if( isset($_REQUEST["createstructure"]) ) {
 					$params['title'] = trim($chapterName);
 					$params['edit'] = '';
 					if( !$nodePage->store( $params ) ) {
-						$gBitSystem->fatalError( "There was an error storing the page: ".vc( $gContent->mErrors ));
+						$gBitSystem->fatalError( "There was an error storing the page: ".\Bitweaver\vc( $gContent->mErrors ));
 					}
 				}
 				$nodeHash['content_id'] = $nodePage->mContentId;
 				$nodeHash['after_ref_id'] = $gStructure->storeNode( $nodeHash );
 			}
 		}
-		bit_redirect( WIKI_PKG_URL."edit_book.php?structure_id=".$structure_id );
+		header( "location: ".WIKI_PKG_URL."edit_book.php?structure_id=".$structure_id );
 	} else {
-		$gBitSmarty->assignByRef( 'errors', $gContent->mErrors );
+		$gBitSmarty->assign( 'errors', $gContent->mErrors );
 		$gBitSmarty->assign( 'name', $_REQUEST['name']);
 		$gBitSmarty->assign( 'chapters', $_REQUEST['chapters']);
 		$mid = 'bitpackage:wiki/create_book.tpl';
@@ -140,7 +140,7 @@ if( isset($_REQUEST["createstructure"]) ) {
 
 	// set the correct display template
 	$mid = 'bitpackage:wiki/edit_book.tpl';
-	include_once( LIBERTY_PKG_INCLUDE_PATH.'structure_edit_inc.php');
+	include_once LIBERTY_PKG_INCLUDE_PATH.'structure_edit_inc.php';
 	if( $gBitThemes->isAjaxRequest() ) {
 		$gBitSmarty->display( 'bitpackage:kernel/feedback_inc.tpl' );
 	}
@@ -149,7 +149,6 @@ if( isset($_REQUEST["createstructure"]) ) {
 	$gBitSystem->setBrowserTitle( 'Create Wiki Book' );
 	$mid = 'bitpackage:wiki/create_book.tpl';
 }
-$gBitSystem->setBrowserTitle( !empty($gStructure) && $gStructure->isValid() ? 'Edit Wiki Book:'.$gStructure->getField( 'title' ) : NULL );
+$gBitSystem->setBrowserTitle( !empty($gStructure) && $gStructure->isValid() ? 'Edit Wiki Book:'.$gStructure->getField( 'title' ) : null );
 // Display the template
-$gBitSystem->display( $mid , NULL, array( 'display_mode' => 'edit' ));
-?>
+$gBitSystem->display( $mid , null, array( 'display_mode' => 'edit' ));

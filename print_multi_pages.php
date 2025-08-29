@@ -13,22 +13,24 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
-require_once( WIKI_PKG_CLASS_PATH.'BitPage.php' );
+require_once '../kernel/includes/setup_inc.php';
+use Bitweaver\Wiki\BitPage;
+use Bitweaver\KernelTools;
+use Bitweaver\HttpStatusCodes;
 
 $gBitSystem->verifyFeature( 'wiki_multiprint' );
 
 if (!isset($_REQUEST["printpages"])) {
-	$gBitSystem->fatalError( tra( "No pages indicated" ), NULL, NULL, HttpStatusCodes::HTTP_NOT_FOUND );
+	$gBitSystem->fatalError( KernelTools::tra( "No pages indicated" ), null, null, HttpStatusCodes::HTTP_NOT_FOUND );
 } else {
 	$printpages = unserialize(urldecode($_REQUEST["printpages"]));
 }
 
 if (isset($_REQUEST["print"])) {
 	// Create XMLRPC object
-	$pages = array();
+	$pages = [];
 	foreach( $printpages as $contentId ) {
-		$page = new BitPage( NULL, $contentId );
+		$page = new BitPage( null, $contentId );
 		if( $page->load() ) {
 			$page->verifyViewPermission();
 			$page->getParsedData();
@@ -36,8 +38,7 @@ if (isset($_REQUEST["print"])) {
 		}
 	}
 }
-$gBitSmarty->assignByRef('pages', $pages);
+$gBitSmarty->assign('pages', $pages);
 
 // Display the template
 $gBitSmarty->display("bitpackage:wiki/print_multi_pages.tpl");
-?>

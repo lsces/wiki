@@ -7,8 +7,9 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
-include_once( WIKI_PKG_CLASS_PATH.'BitPage.php' );
+require_once '../kernel/includes/setup_inc.php';
+use Bitweaver\Wiki\BitPage;
+use Bitweaver\KernelTools;
 
 // verify stuff
 $gBitSystem->verifyPackage( 'wiki' );
@@ -32,21 +33,18 @@ if( isset( $_REQUEST["batch_submit"] ) && isset( $_REQUEST["checked"] ) && $_REQ
 	if( !empty( $_REQUEST['cancel'] )) {
 		// user cancelled - just continue on, doing nothing
 	} elseif( empty( $_REQUEST['confirm'] )) {
-		$formHash['delete'] = TRUE;
+		$formHash['delete'] = true;
 		$formHash['batch_submit'] = 'remove_pages';
 		foreach( $_REQUEST["checked"] as $del ) {
 			$tmpPage = new BitPage( $del);
-			if( $tmpPage->load() && !empty( $tmpPage->mInfo['title'] )) {
-				$info = $tmpPage->mInfo['title'];
-			} else {
-				$info = $del;
-			}
+			$info = $tmpPage->load() && !empty( $tmpPage->mInfo['title'] ) ? $tmpPage->mInfo['title'] : $del;
+
 			$formHash['input'][] = '<input type="hidden" name="checked[]" value="'.$del.'"/>'.$info;
 		}
 		$gBitSystem->confirmDialog( $formHash, 
 				array( 
-					'warning' => tra('Are you sure you want to delete these pages?') . ' (' . tra('Count: ') . count( $_REQUEST["checked"] ) . ')',				
-					'error' => tra('This cannot be undone!'),
+					'warning' => KernelTools::tra('Are you sure you want to delete these pages?') . ' (' . KernelTools::tra('Count: ') . count( $_REQUEST["checked"] ) . ')',				
+					'error' => KernelTools::tra('This cannot be undone!'),
 				)
 			);
 	} else {
@@ -57,20 +55,20 @@ if( isset( $_REQUEST["batch_submit"] ) && isset( $_REQUEST["checked"] ) && $_REQ
 			}
 		}
 		if( !empty( $errors )) {
-			$gBitSmarty->assignByRef( 'errors', $errors );
+			$gBitSmarty->assign( 'errors', $errors );
 		}
 	}
 }
 
 $gContent = new BitPage();
-$gBitSmarty->assignByRef( "gContent", $gContent );
+$gBitSmarty->assign( "gContent", $gContent );
 
 if( !empty( $_REQUEST['sort_mode'] )) {
 	$listHash['sort_mode'] = preg_replace( '/^user_/', 'creator_user_', $_REQUEST['sort_mode'] );
 }
 $listHash = $_REQUEST;
-$listHash['extras'] = TRUE;
-$listHash['orphans_only'] = TRUE;
+$listHash['extras'] = true;
+$listHash['orphans_only'] = true;
 $listpages = $gContent->getList( $listHash );
 
 // we will probably need a better way to do this
@@ -78,9 +76,8 @@ $listHash['listInfo']['parameters']['find_title']       = !empty( $listHash['fin
 $listHash['listInfo']['parameters']['find_author']      = !empty( $listHash['find_author'] ) ? $listHash['find_author'] : '';
 $listHash['listInfo']['parameters']['find_last_editor'] = !empty( $listHash['find_last_editor'] ) ? $listHash['find_last_editor'] : '';
 
-$gBitSmarty->assignByRef( 'listpages', $listpages );
-$gBitSmarty->assignByRef( 'listInfo', $listHash['listInfo'] );
+$gBitSmarty->assign( 'listpages', $listpages );
+$gBitSmarty->assign( 'listInfo', $listHash['listInfo'] );
 
 // Display the template
-$gBitSystem->display( 'bitpackage:wiki/orphan_pages.tpl', tra( 'Orphan Pages' ), array( 'display_mode' => 'list' ));
-?>
+$gBitSystem->display( 'bitpackage:wiki/orphan_pages.tpl', KernelTools::tra( 'Orphan Pages' ), array( 'display_mode' => 'list' ));

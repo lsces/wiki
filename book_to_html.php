@@ -13,9 +13,9 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
+require_once '../kernel/includes/setup_inc.php';
 
-include_once( WIKI_PKG_CLASS_PATH.'BitBook.php');
+use Bitweaver\KernelTools;
 
 function copys($source,$dest)
 {
@@ -48,22 +48,22 @@ function deldirfiles($dir){
   $current_dir = opendir($dir);
   while($entryname = readdir($current_dir)){
      if(is_dir("$dir/$entryname") and ($entryname != "." and $entryname!="..")){
-        deldirfiles("${dir}/${entryname}");
+        deldirfiles("{$dir}/{$entryname}");
      }elseif($entryname != "." and $entryname!=".."){
-        unlink("${dir}/${entryname}");
+        unlink("{$dir}/{$entryname}");
      }
   }
   closedir($current_dir);
 }
 
 if( !$gBitUser->isAdmin() ) {
-	$gBitSmarty->assign('msg', tra("You dont have permission to use this feature"));
-	$gBitSystem->display( 'error.tpl' , NULL, array( 'display_mode' => 'display' ));
+	$gBitSmarty->assign('msg', KernelTools::tra("You dont have permission to use this feature"));
+	$gBitSystem->display( 'error.tpl' , null, [ 'display_mode' => 'display' ] );
 	die;
 }
 
 $struct_info = $structlib->s_get_structure_info($_REQUEST['struct']);
-$gBitSmarty->assignByRef('struct_info',$struct_info);
+$gBitSmarty->assign('struct_info',$struct_info);
 
 $gBitSmarty->assign('generated','y');
 if(isset($_REQUEST['create'])) {
@@ -103,6 +103,4 @@ if(isset($_REQUEST['create'])) {
 }
 
 // Display the template
-$gBitSystem->display( 'bitpackage:wiki/create_webhelp.tpl', NULL, array( 'display_mode' => 'display' ));
-
-?>
+$gBitSystem->display( 'bitpackage:wiki/create_webhelp.tpl', null, array( 'display_mode' => 'display' ));

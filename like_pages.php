@@ -13,21 +13,24 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
-include_once( WIKI_PKG_CLASS_PATH.'BitPage.php');
-include_once( WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php' );
+namespace Bitweaver\Wiki;
+use Bitweaver\KernelTools;
+
+require_once '../kernel/includes/setup_inc.php';
+
+include_once WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php';
+
 $gBitSystem->verifyPackage( 'wiki' );
 $gBitSystem->verifyFeature( 'wiki_like_pages' );
 $gBitSystem->verifyPermission( 'p_wiki_list_pages' );
 
 // Get the page from the request var or default it to HomePage
 if( !$gContent->isValid() ) {
-	$gBitSystem->fatalError( tra( "No page indicated" ));
+	$gBitSystem->fatalError( KernelTools::tra( "No page indicated" ));
 }
 
 $likepages = $gContent->getLikePages( $gContent->mInfo['title'] );
-$gBitSmarty->assignByRef( 'likepages', $likepages );
+$gBitSmarty->assign( 'likepages', $likepages );
 
 // Display the template
-$gBitSystem->display( 'bitpackage:wiki/like_pages.tpl', NULL, array( 'display_mode' => 'display' ));
-?>
+$gBitSystem->display( 'bitpackage:wiki/like_pages.tpl', null, array( 'display_mode' => 'display' ));

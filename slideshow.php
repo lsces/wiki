@@ -13,29 +13,27 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
-require_once( 'BitPage.php' );
+require_once '../kernel/includes/setup_inc.php';
+use Bitweaver\HttpStatusCodes;
+use Bitweaver\KernelTools;
+use Bitweaver\Liberty\LibertyContent;
 
 $gBitSystem->verifyPackage( 'wiki' );
 //print($GLOBALS["HTTP_REFERER"]);
 
-if (!isset($_SESSION["thedate"])) {
-	$thedate = $gBitSystem->getUTCTime();
-} else {
-	$thedate = $_SESSION["thedate"];
-}
+$thedate = $_SESSION["thedate"] ?? $gBitSystem->getUTCTime();
 
-require_once ( WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php' );
+require_once WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php';
 // If the page doesn't exist then display an error
 if (!$gContent->isValid()) {
-	$gBitSystem->fatalError( tra("Page cannot be found"), NULL, NULL, HttpStatusCodes::HTTP_NOT_FOUND );
+	$gBitSystem->fatalError( KernelTools::tra("Page cannot be found"), null, null, HttpStatusCodes::HTTP_NOT_FOUND );
 }
 
 // Now check permissions to access this page
 $gContent->verifyViewPermission();
 
 // Get page data
-include( WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php' );
+include WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php';
 $info = $gContent->mInfo;
 
 // If not locked and last version is user version then can undo
@@ -51,7 +49,7 @@ if( $gContent->hasAdminPermission() ) {
 
 //Now process the pages
 preg_match_all("/-=([^=]+)=-/", $info["data"], $reqs);
-$slides = split("-=[^=]+=-", $info["data"]);
+$slides = mb_split("-=[^=]+=-", $info["data"]);
 
 if (count($slides) < 2) {
 	$slides = explode(defined('PAGE_SEP') ? PAGE_SEP : "...page...", $info["data"]);
@@ -66,25 +64,11 @@ if (!isset($_REQUEST["slide"])) {
 $gBitSmarty->assign('prev_slide', $_REQUEST["slide"] - 1);
 $gBitSmarty->assign('next_slide', $_REQUEST["slide"] + 1);
 
-if (isset($reqs[1][$_REQUEST["slide"]])) {
-	$slide_title = $reqs[1][$_REQUEST["slide"]];
-} else {
-	$slide_title = '';
-}
+$slide_title = $reqs[1][$_REQUEST["slide"]] ?? '';
 
 $slide_data = LibertyContent::parseDataHash( $slides[$_REQUEST["slide"] + 1] );
-
-if (isset($reqs[1][$_REQUEST["slide"] - 1])) {
-	$slide_prev_title = $reqs[1][$_REQUEST["slide"] - 1];
-} else {
-	$slide_prev_title = 'prev';
-}
-
-if (isset($reqs[1][$_REQUEST["slide"] + 1])) {
-	$slide_next_title = $reqs[1][$_REQUEST["slide"] + 1];
-} else {
-	$slide_next_title = 'next';
-}
+$slide_prev_title = $reqs[1][$_REQUEST["slide"] - 1] ?? 'prev';
+$slide_next_title = $reqs[1][$_REQUEST["slide"] + 1] ?? 'next';
 
 $gBitSmarty->assign('slide_prev_title', $slide_prev_title);
 $gBitSmarty->assign('slide_next_title', $slide_next_title);
@@ -97,13 +81,12 @@ $current_slide = $_REQUEST["slide"] + 1;
 $gBitSmarty->assign('total_slides', $total_slides);
 $gBitSmarty->assign('current_slide', $current_slide);
 
-//$gBitSmarty->assignByRef('last_modified',date("l d of F, Y  [H:i:s]",$info["last_modified"]));
-$gBitSmarty->assignByRef('last_modified', $info["last_modified"]);
+//$gBitSmarty->assign('last_modified',date("l d of F, Y  [H:i:s]",$info["last_modified"]));
+$gBitSmarty->assign('last_modified', $info["last_modified"]);
 
 if (empty($info["user"])) {
 	$info["user"] = 'anonymous';
 }
 
-$gBitSmarty->assignByRef('lastUser', $info["user"]);
+$gBitSmarty->assign('lastUser', $info["user"]);
 $gBitSmarty->display("bitpackage:wiki/slideshow.tpl");
-?>

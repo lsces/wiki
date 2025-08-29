@@ -13,14 +13,15 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
-
-require_once( WIKI_PKG_CLASS_PATH.'BitBook.php' );
+require_once '../kernel/includes/setup_inc.php';
+use Bitweaver\Wiki\BitBook;
+use Bitweaver\Liberty\LibertyContent;
+use Bitweaver\Liberty\LibertyStructure;
 
 $book = new BitBook();
-$gSiteMapHash = array();
+$gSiteMapHash = [];
 
-$listHash = array();
+$listHash = [];
 
 if( $bookList = $book->getList( $listHash ) ) {
 	foreach( $bookList['data'] as $bookHash ) {
@@ -34,12 +35,11 @@ if( $bookList = $book->getList( $listHash ) ) {
 	}
 }
 
-
 function process_book_list( $pList, $pDepth = 1 ) {
 	global $gSiteMapHash;
 	foreach( array_keys( $pList ) as $key ) {
 		if( !empty( $pList[$key]['display_url'] ) ) {
-			$hash = array();
+			$hash = [];
 			$hash['loc'] =  BIT_BASE_URI.$pList[$key]['display_url'];
 			$hash['lastmod'] = date( 'Y-m-d', $pList[$key]['last_modified'] );
 			if( (time() - $pList[$key]['last_modified']) < 86400 ) {
@@ -51,15 +51,15 @@ function process_book_list( $pList, $pDepth = 1 ) {
 			}
 			
 			$hash['changefreq'] = $freq;
-			$hash['priority'] = 1 - (round( $pDepth * .5 ) * .1);
+			$hash['priority'] = 1 - round( $pDepth * .5 ) * .1;
 			$gSiteMapHash[$pList[$key]['content_id']] = $hash;
 		}
 		if( !empty( $pList[$key]['sub'] ) ) {
-			process_book_list( $pList[$key]['sub'], ($pDepth + 1) );
+			process_book_list( $pList[$key]['sub'], $pDepth + 1 );
 		}
 	}
 }
 
-$gBitSmarty->assignByRef( 'gSiteMapHash', $gSiteMapHash );
+$gBitSmarty->assign( 'gSiteMapHash', $gSiteMapHash );
 $gBitThemes->setFormatHeader( 'xml' );
 print $gBitSmarty->display( 'bitpackage:kernel/sitemap.tpl' );

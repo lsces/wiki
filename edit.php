@@ -13,8 +13,12 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
-include_once( WIKI_PKG_CLASS_PATH.'BitBook.php' );
+require_once '../kernel/includes/setup_inc.php';
+use Bitweaver\BitBase;
+use Bitweaver\KernelTools;
+use Bitweaver\Liberty\BitLinks;
+use Bitweaver\Liberty\LibertyContent;
+use Bitweaver\Liberty\LibertyComment;
 
 $gBitSystem->verifyPackage( 'wiki' );
 
@@ -22,7 +26,7 @@ $gBitSystem->verifyPackage( 'wiki' );
 unset($_REQUEST['content_id']);
 // Disable parsing data if not asking to preview page
 $_REQUEST["parse"] = false;
-include( WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php' );
+include WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php';
 
 if( $gContent->isValid() ) {
 	$gContent->verifyUpdatePermission();
@@ -32,7 +36,6 @@ if( $gContent->isValid() ) {
 
 //make comment count for this page available for templates
 if( $gBitSystem->isFeatureActive( 'wiki_comments' ) && !empty( $_REQUEST['page_id'] ) ) {
-	require_once( LIBERTY_PKG_CLASS_PATH.'LibertyComment.php' );
 	$gComment = new LibertyComment();
 	$numComments = $gComment->getNumComments($gContent->mContentId);
 	$gBitSmarty->assign('comments_count', $numComments);
@@ -46,7 +49,6 @@ if( !isset( $_REQUEST['title'] ) && isset( $gContent->mInfo['title'] ) ) {
 if( $gContent->isLocked() ) {
 	$gBitSystem->fatalError( 'Cannot edit page because it is locked' );
 }
-
 
 $gContent->invokeServices( 'content_edit_function' );
 
@@ -102,11 +104,7 @@ if( isset( $_REQUEST['title'] ) ) {
 if( isset( $_REQUEST["description"] ) ) {
 	$formInfo['description'] = $_REQUEST["description"];
 }
-if( isset( $_REQUEST["edit_comment"] ) ) {
-	$formInfo['edit_comment'] = $_REQUEST["edit_comment"];
-} else {
-	$formInfo['edit_comment'] = '';
-}
+$formInfo['edit_comment'] = $_REQUEST["edit_comment"] ?? '';
 
 $cat_obj_type = BITPAGE_CONTENT_TYPE_GUID;
 
@@ -125,7 +123,7 @@ if( $gBitSystem->isFeatureActive( 'wiki_copyrights' ) ) {
 // Pro
 // Check if the page has changed
 if( isset( $_REQUEST["fCancel"] ) ) {
-	if( @BitBase::verifyId( $gContent->mContentId ) ) {
+	if( BitBase::verifyId( $gContent->mContentId ) ) {
 		header( "Location: ".$gContent->getDisplayUrl() );
 	} else {
 		header( "Location: ".WIKI_PKG_URL );
@@ -142,28 +140,29 @@ if( isset( $_REQUEST["fCancel"] ) ) {
 		&& !empty( $_REQUEST['copyrightYear'] )
 		&& !empty( $_REQUEST['copyrightTitle'] )
 	) {
-		require_once( WIKI_PKG_INCLUDE_PATH.'copyrights_lib.php' );
+		require_once WIKI_PKG_INCLUDE_PATH.'copyrights_lib.php';
 		$copyrightYear = $_REQUEST['copyrightYear'];
 		$copyrightTitle = $_REQUEST['copyrightTitle'];
 		$copyrightAuthors = $_REQUEST['copyrightAuthors'];
 		$copyrightslib->add_copyright( $gContent->mPageId, $copyrightTitle, $copyrightYear, $copyrightAuthors, $gBitUser->mUserId );
 	}
 
+//	$sBitLinks = new BitLinks();
 	if( $gContent->mPageId )
 	{	if( isset( $_REQUEST['isminor'] ) && $_REQUEST['isminor']=='on' ) {
-			$_REQUEST['minor']=true;
+			$_REQUEST['minor'] = true;
 		} else {
-			$_REQUEST['minor']=false;
-//			$links = $gContent->get_links( $edit );
+			$_REQUEST['minor'] = false;
+			$links = []; // $sBitLinks->get_links( $edit );
 //			$wikilib->cache_links( $links );
-//			$gContent->storeLinks( $links );
+//			$sBitLinks->storeLinks( $links );
 		}
 	} else {
-//		$links = $gContent->get_links( $_REQUEST["edit"] );
-//		$notcachedlinks = $gContent->get_links_nocache( $_REQUEST["edit"] );
+		$links = []; // $sBitLinks->get_links( $_REQUEST["edit"] );
+//		$notcachedlinks = $sBitLinks->get_links_nocache( $_REQUEST["edit"] );
 //		$cachedlinks = array_diff( $links, $notcachedlinks );
-//		$gContent->cache_links( $cachedlinks );
-//		$gContent->storeLinks( $cachedlinks );
+//		$sBitLinks->cache_links( $cachedlinks );
+//		$sBitLinks->storeLinks( $cachedlinks );
 	}
 
 	$data_to_parse = $formInfo['edit'];
@@ -178,7 +177,8 @@ if( isset( $_REQUEST["fCancel"] ) ) {
 			$gBitUser->storeWatch( "wiki_page_changed", $gContent->mPageId, $gContent->mContentTypeGuid, $_REQUEST['title'], $gContent->getDisplayUrl() );
 		}
 
-		header( "Location: ".$gContent->getDisplayUrl( $gContent->mPageName ) );
+		$return = [ 'title' => $gContent->mPageName ];
+		header( "Location: ".$gContent->getDisplayUrlFromHash( $return ) );
 		die;
 
 	} else {
@@ -195,11 +195,12 @@ if( isset( $_REQUEST['format_guid'] ) && !isset( $gContent->mInfo['format_guid']
 	$formInfo['format_guid'] = $gContent->mInfo['format_guid'] = $_REQUEST['format_guid'];
 }
 
+$preview = false;
 if( isset( $_REQUEST["preview"] ) ) {
 	// Chrome does not like seeing the page source in the page itself.
 	header("X-XSS-Protection: 0");
-	$gBitSmarty->assign( 'preview',1 );
-	$gBitSmarty->assign( 'title',!empty( $_REQUEST["title"] ) ? $_REQUEST["title"]:$gContent->mPageName );
+	$preview = true;
+	$gBitSmarty->assign( 'title',!empty( $_REQUEST["title"] ) ? $_REQUEST["title"] : $gContent->mPageName );
 
 	if (!empty($formInfo['section'])) {
 		$formInfo['edit_section'] = 1;
@@ -212,7 +213,8 @@ if( isset( $_REQUEST["preview"] ) ) {
 
 	$formInfo['parsed_data'] = LibertyContent::parseDataHash( $data_to_parse );
 	$gContent->invokeServices( 'content_preview_function' );
-}
+} 
+$gBitSmarty->assign( 'preview',$preview );
 
 if( $gContent->isInStructure() ) {
 	$gBitSmarty->assign( 'showstructs', $gContent->getStructures() );
@@ -231,14 +233,14 @@ if( empty( $formInfo ) ) {
 // make original page title available for template
 $formInfo['original_title'] =( !empty( $gContent->mInfo['title'] ) ) ? $gContent->mInfo['title']  : "" ;
 
-$gBitSmarty->assignByRef( 'pageInfo', $formInfo );
-$gBitSmarty->assignByRef( 'errors', $gContent->mErrors );
+$gBitSmarty->assign( 'pageInfo', $formInfo );
+$gBitSmarty->assign( 'errors', $gContent->mErrors );
 
 if( $gBitSystem->isPackageActive( 'ckeditor' ) ) {
 //	loadCkEditor();
 }
 
-$gBitSystem->display( 'bitpackage:wiki/edit_page.tpl', 'Edit: '.$gContent->getTitle() , array( 'display_mode' => 'edit' ));
+$gBitSystem->display( 'bitpackage:wiki/edit_page.tpl', 'Edit: '.$gContent->getTitle() , [ 'display_mode' => 'edit' ] );
 
 
 
@@ -265,9 +267,9 @@ function parse_output( &$obj, &$parts,$i ) {
 			case 'application/x-tikiwiki':
 				$aux["body"] = $obj->body;
 				$ccc=$obj->headers["content-type"];
-				$items = split( ';',$ccc );
+				$items = mb_split( ';',$ccc );
 				foreach( $items as $item ) {
-					$portions = split( '=',$item );
+					$portions = mb_split( '=',$item );
 					if( isset( $portions[0] ) &&isset( $portions[1] ) ) {
 						$aux[trim( $portions[0] )]=trim( $portions[1] );
 					}
@@ -319,82 +321,145 @@ function compare_import_versions( $a1, $a2 ) {
 function walk_and_parse( &$c, &$src, &$p ) {
 	for( $i=0; $i <= $c["contentpos"]; $i++ ) {
 		// If content type 'text' output it to destination...
-		if( $c[$i]["type"] == "text" ) {
-			$src .= $c[$i]["data"];
-		} elseif( $c[$i]["type"] == "tag" ) {
-			if( $c[$i]["data"]["type"] == "open" ) {
-				// Open tag type
-				switch( $c[$i]["data"]["name"] ) {
-					case "br": $src .= "\n"; break;
-					case "title": $src .= "\n!"; $p['stack'][] = array( 'tag' => 'title', 'string' => "\n" ); break;
-					case "p": $src .= "\n"; $p['stack'][] = array( 'tag' => 'p', 'string' => "\n" ); break;
-					case "b": $src .= '__'; $p['stack'][] = array( 'tag' => 'b', 'string' => '__' ); break;
-					case "i": $src .= "''"; $p['stack'][] = array( 'tag' => 'i', 'string' => "''" ); break;
-					case "u": $src .= "=="; $p['stack'][] = array( 'tag' => 'u', 'string' => "==" ); break;
-					case "center": $src .= '::'; $p['stack'][] = array( 'tag' => 'center', 'string' => '::' ); break;
-					case "code": $src .= '-+';  $p['stack'][] = array( 'tag' => 'code', 'string' => '+-' ); break;
-					// headers detection looks like real suxx code...
-					// but possible it run faster :) I don't know where is profiler in PHP...
-					case "h1": $src .= "\n!"; $p['stack'][] = array( 'tag' => 'h1', 'string' => "\n" ); break;
-					case "h2": $src .= "\n!!"; $p['stack'][] = array( 'tag' => 'h2', 'string' => "\n" ); break;
-					case "h3": $src .= "\n!!!"; $p['stack'][] = array( 'tag' => 'h3', 'string' => "\n" ); break;
-					case "h4": $src .= "\n!!!!"; $p['stack'][] = array( 'tag' => 'h4', 'string' => "\n" ); break;
-					case "h5": $src .= "\n!!!!!"; $p['stack'][] = array( 'tag' => 'h5', 'string' => "\n" ); break;
-					case "h6": $src .= "\n!!!!!!"; $p['stack'][] = array( 'tag' => 'h6', 'string' => "\n" ); break;
-					case "pre": $src .= '~pp~'; $p['stack'][] = array( 'tag' => 'pre', 'string' => '~/pp~' ); break;
-					// Table parser
-					case "table": $src .= '||'; $p['stack'][] = array( 'tag' => 'table', 'string' => '||' ); break;
-					case "tr": $p['first_td'] = true; break;
-					case "td": $src .= $p['first_td'] ? '' : '|'; $p['first_td'] = false; break;
-					// Lists parser
-					case "ul": $p['listack'][] = '*'; break;
-					case "ol": $p['listack'][] = '#'; break;
-					case "li":
-						// Generate wiki list item according to current list depth.
-						//( ensure '*/#' starts from begining of line )
-						for( $l = ''; strlen( $l ) < count( $p['listack'] ); $l .= end( $p['listack'] ) );
-						$src .= "\n$l ";
-						break;
-					case "font":
-						// If color attribute present in <font> tag
-						if( isset( $c[$i]["pars"]["color"]["value"] ) ) {
-							$src .= '~~'.$c[$i]["pars"]["color"]["value"].':';
-							$p['stack'][] = array( 'tag' => 'font', 'string' => '~~' );
+		switch ($c[$i]["type"]) {
+			case "text":
+				$src .= $c[$i]["data"];
+				break;
+			case "tag":
+				switch ($c[$i]["data"]["type"]) {
+					case "open":
+						switch ($c[$i]["data"]["name"]) {
+							case "br":
+								$src .= "\n";
+								break;
+							case "title":
+								$src .= "\n!";
+								$p['stack'][] = [ 'tag' => 'title', 'string' => "\n" ];
+								break;
+							case "p":
+								$src .= "\n";
+								$p['stack'][] = [ 'tag' => 'p', 'string' => "\n" ];
+								break;
+							case "b":
+								$src .= '__';
+								$p['stack'][] = [ 'tag' => 'b', 'string' => '__' ];
+								break;
+							case "i":
+								$src .= "''";
+								$p['stack'][] = [ 'tag' => 'i', 'string' => "''" ];
+								break;
+							case "u":
+								$src .= "==";
+								$p['stack'][] = [ 'tag' => 'u', 'string' => "==" ];
+								break;
+							case "center":
+								$src .= '::';
+								$p['stack'][] = [ 'tag' => 'center', 'string' => '::' ];
+								break;
+							case "code":
+								$src .= '-+';
+								$p['stack'][] = [ 'tag' => 'code', 'string' => '+-' ];
+								break;
+							// headers detection looks like real suxx code...
+							// but possible it run faster :) I don't know where is profiler in PHP...
+							case "h1":
+								$src .= "\n!";
+								$p['stack'][] = [ 'tag' => 'h1', 'string' => "\n" ];
+								break;
+							case "h2":
+								$src .= "\n!!";
+								$p['stack'][] = [ 'tag' => 'h2', 'string' => "\n" ];
+								break;
+							case "h3":
+								$src .= "\n!!!";
+								$p['stack'][] = [ 'tag' => 'h3', 'string' => "\n" ];
+								break;
+							case "h4":
+								$src .= "\n!!!!";
+								$p['stack'][] = [ 'tag' => 'h4', 'string' => "\n" ];
+								break;
+							case "h5":
+								$src .= "\n!!!!!";
+								$p['stack'][] = [ 'tag' => 'h5', 'string' => "\n" ];
+								break;
+							case "h6":
+								$src .= "\n!!!!!!";
+								$p['stack'][] = [ 'tag' => 'h6', 'string' => "\n" ];
+								break;
+							case "pre":
+								$src .= '~pp~';
+								$p['stack'][] = [ 'tag' => 'pre', 'string' => '~/pp~' ];
+								break;
+							// Table parser
+							case "table":
+								$src .= '||';
+								$p['stack'][] = [ 'tag' => 'table', 'string' => '||' ];
+								break;
+							case "tr":
+								$p['first_td'] = true;
+								break;
+							case "td":
+								$src .= $p['first_td'] ? '' : '|';
+								$p['first_td'] = false;
+								break;
+							// Lists parser
+							case "ul":
+								$p['listack'][] = '*';
+								break;
+							case "ol":
+								$p['listack'][] = '#';
+								break;
+							case "li":
+								// Generate wiki list item according to current list depth.
+								//( ensure '*/#' starts from begining of line )
+								for ( $l = ''; strlen( $l ) < count( $p['listack'] ); $l .= end( $p['listack'] ) )
+									;
+								$src .= "\n$l ";
+								break;
+							case "font":
+								// If color attribute present in <font> tag
+								if (isset( $c[$i]["pars"]["color"]["value"] )) {
+									$src .= '~~' . $c[$i]["pars"]["color"]["value"] . ':';
+									$p['stack'][] = [ 'tag' => 'font', 'string' => '~~' ];
+								}
+								break;
+							case "img":
+								// If src attribute present in <img> tag
+								if (isset( $c[$i]["pars"]["src"]["value"] )) {
+									// Note what it produce( img ) not {img}! Will fix this below...
+									$src .= '( img src=' . $c[$i]["pars"]["src"]["value"] . ' )';
+								}
+								break;
+							case "a":
+								// If href attribute present in <a> tag
+								if (isset( $c[$i]["pars"]["href"]["value"] )) {
+									$src .= '[' . $c[$i]["pars"]["href"]["value"] . '|';
+									$p['stack'][] = [ 'tag' => 'a', 'string' => ']' ];
+								}
+								break;
 						}
 						break;
-					case "img":
-						// If src attribute present in <img> tag
-						if( isset( $c[$i]["pars"]["src"]["value"] ) ) {
-							// Note what it produce( img ) not {img}! Will fix this below...
-							$src .= '( img src='.$c[$i]["pars"]["src"]["value"].' )';
-						}
-						break;
-					case "a":
-						// If href attribute present in <a> tag
-						if( isset( $c[$i]["pars"]["href"]["value"] ) ) {
-							$src .= '['.$c[$i]["pars"]["href"]["value"].'|';
-							$p['stack'][] = array( 'tag' => 'a', 'string' => ']' );
+					default:
+						switch ($c[$i]["data"]["name"]) {
+							case "ul":
+								if (end( $p['listack'] ) == '*')
+									array_pop( $p['listack'] );
+								break;
+							case "ol":
+								if (end( $p['listack'] ) == '#')
+									array_pop( $p['listack'] );
+								break;
+							default:
+								$e = end( $p['stack'] );
+								if ($c[$i]["data"]["name"] == $e['tag']) {
+									$src .= $e['string'];
+									array_pop( $p['stack'] );
+								}
+								break;
 						}
 						break;
 				}
-			} else {
-				// This is close tag type. Is that smth we r waiting for?
-				switch( $c[$i]["data"]["name"] ) {
-				case "ul":
-					if( end( $p['listack'] ) == '*' ) array_pop( $p['listack'] );
-					break;
-				case "ol":
-					if( end( $p['listack'] ) == '#' ) array_pop( $p['listack'] );
-					break;
-				default:
-					$e = end( $p['stack'] );
-					if( $c[$i]["data"]["name"] == $e['tag'] ) {
-						$src .= $e['string'];
-						array_pop( $p['stack'] );
-					}
-					break;
-				}
-			}
+				break;
 		}
 		// Recursive call on tags with content...
 		if( isset( $c[$i]["content"] ) ) {
@@ -405,10 +470,10 @@ function walk_and_parse( &$c, &$src, &$p ) {
 }
 if( isset( $_REQUEST["suck_url"] ) ) {
 	if( !$gBitSystem->isFeatureActive( 'wiki_url_import' ) ) {
-		$gBitSystem->fatalError( tra( "Importing remote URLs is disabled" ));
+		$gBitSystem->fatalError( KernelTools::tra( "Importing remote URLs is disabled" ));
 	}
 	// Suck another page and append to the end of current
-	require_once( UTIL_PKG_INCLUDE_PATH.'htmlparser/html_parser_inc.php' );
+	require_once UTIL_PKG_INCLUDE_PATH.'htmlparser/html_parser_inc.php';
 	$suck_url = isset( $_REQUEST["suck_url"] ) ? $_REQUEST["suck_url"] : '';
 	$parsehtml = isset( $_REQUEST["parsehtml"] ) ? ( $_REQUEST["parsehtml"] == 'on' ? 'y' : 'n' ): 'n';
 	if( isset( $_REQUEST['do_suck'] ) && strlen( $suck_url ) > 0 ) {
@@ -425,22 +490,22 @@ if( isset( $_REQUEST["suck_url"] ) ) {
 		$parsed_url = parse_url($suck_url);
 		//Disallow urls without schema (usually relative urls), or http(s)
 		if(!isset($parsed_url['scheme']) || ($parsed_url['scheme']!='http' && $parsed_url['scheme']!='https')){
-			$gBitSystem->fatalError( tra( "Invalid URL; not absolute or not HTTP" ));
+			$gBitSystem->fatalError( KernelTools::tra( "Invalid URL; not absolute or not HTTP" ));
 		}
 		//Make sure the passed host isn't local
 		if(!isset($parsed_url['host']) || ($parsed_url['host']=='localhost') || strncmp($parsed_url['host'],"127.",4)==0){
-			$gBitSystem->fatalError( tra( "The host specified is either empty or local." ));
+			$gBitSystem->fatalError( KernelTools::tra( "The host specified is either empty or local." ));
 		}
 		$sdta = @file_get_contents( $suck_url );
 		if( isset( $php_errormsg ) && strlen( $php_errormsg ) ) {
-			$gBitSystem->fatalError( tra( "Can't import remote HTML page" ));
+			$gBitSystem->fatalError( KernelTools::tra( "Can't import remote HTML page" ));
 		}
 		// Need to parse HTML?
 		if( $parsehtml == 'y' ) {
 			// Read compiled( serialized ) grammar
 			$grammarfile = UTIL_PKG_INCLUDE_PATH.'htmlparser/htmlgrammar.cmp';
 			if( !$fp = @fopen( $grammarfile,'r' ) ) {
-				$gBitSystem->fatalError( tra( "Can't parse remote HTML page" ));
+				$gBitSystem->fatalError( KernelTools::tra( "Can't parse remote HTML page" ));
 			}
 			$grammar = unserialize( fread( $fp, filesize( $grammarfile ) ) );
 			fclose( $fp );
@@ -449,7 +514,7 @@ if( isset( $_REQUEST["suck_url"] ) ) {
 			$htmlparser->Parse();
 			// Should I try to convert HTML to wiki?
 			$parseddata = '';
-			$p =  array( 'stack' => array(), 'listack' => array(), 'first_td' => false );
+			$p = [ 'stack' => [], 'listack' => [], 'first_td' => false ];
 			walk_and_parse( $htmlparser->content, $parseddata, $p );
 			// Is some tags still opened?( It can be if HTML not valid, but this is not reason
 			// to produce invalid wiki : )
@@ -472,9 +537,3 @@ if( isset( $_REQUEST["suck_url"] ) ) {
 		$_REQUEST['edit'] .= $sdta;
 	}
 }
-
-//***************************************
-
-
-
-?>
