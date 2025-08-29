@@ -7,7 +7,7 @@
 /**
  * required setup
  */
-require_once( WIKI_PKG_CLASS_PATH.'BitPage.php' );
+use Bitweaver\Wiki\BitPage;
 
 $tutorial_intro = '^This tutorial does not contain any direct links to any particular pages. This is to help you understand how to navigate bitweaver. If you don\'t feel confident about finding your way back to this page, it might be useful to open a second browser window to carry out these instructions or print this page before continuing.
 
@@ -16,11 +16,11 @@ To continue with this tutorial, it would be best if you had administrator rights
 $admin_link = 'You first have to go to the Administration panel (Administration in the top menu bar). Once there you can see a number of links organised by package:
 __Administration__ --> ';
 
-$pageHash = array(
-	array(
+$pageHash = [ 
+[
 		'title' => 'Welcome',
 		'description' => 'The Wiki Package of bitweaver',
-		'edit' => 'Welcome to bitweaver.
+		'edit' => "Welcome to bitweaver.
 We appreciate that you are taking the time to test this unique product. bitweaver allows you to create a website exactly the way you want it to be. You can install packages as you need them, enhancing or reducing the functionality of your site. If you should have space limitations you can delete packages from your server without any consequences (as long as it\'s none of the required packages).
 
 bitweaver was built with extensibility in mind and thus we have made it \'\'easy\'\' to create new packages for developers and just plug them into the bitweaver framework. We envisage that more packages will become in the future. If you should require additional functionality, it is worth keeping your eyes on [http://www.bitweaver.org/wiki/index.php?page=bitweaverFeatures|bitweaver Features], where we will announce all new packages as they are developed and reach a stable status.
@@ -32,9 +32,9 @@ bitweaver was built with extensibility in mind and thus we have made it \'\'easy
 ** ((Getting Help))
 ** ((How to create a Wiki Book))
 ** ((How to set your Wiki Homepage))
-** ((bitweaver Glossary))
-'),
-	array(
+** ((bitweaver Glossary))"
+],
+	[
 		'title' => 'Getting Started',
 		'description' => 'Some basic pointer on where to go after installation',
 		'edit' => "{maketoc}
@@ -65,8 +65,8 @@ To control the availability of this __code__ plugin, you can do this on the {$ad
 
 !! Other Plugins
 Some other packages also have plugins. These settings can usually be found in the respective package plugins admin page e.g.: {$admin_link}__Treasury__ --> __Treasury Plugins__.
-"),
-	array(
+"],
+	[
 		'title' => 'Getting Help',
 		'description' => 'Help and Contact Details',
 		'edit' => 'bitweaver features an internal help system that provides help in virtually all forms and areas where you have to enter information. However, should you require more help, you can always contact us by any of the means mentioned below.
@@ -79,8 +79,8 @@ Some other packages also have plugins. These settings can usually be found in th
 	** the [http://www.bitweaver.org/forums/viewforum.php?f=5|bitweaver Forums] might contain useful information.
 	** [http://www.bitweaver.org/|bitweaver] currently contains all the documentation we have.
 * If you think you could contribute to bitweaver in any way, please feel free to contact us. we appreciate all the help we can get.
-'),
-	array(
+'],
+	[
 		'title' => 'How to create a Wiki Book',
 		'description' => 'A wikibook is a handy way to organise pages.',
 		'edit' => '{maketoc}
@@ -132,8 +132,8 @@ You can make it more apparent that the ((bitweaver Glossary)) is part of the ((G
 
 !Viewing the Wiki Book
 Now that we have created a Wiki Book, we want to view it and see what all this work was for. If you click on the __Wiki Books__ in your left menu, you will see the ===bitweaver Help=== book. Please click on the book, which will take you to a page, where you can see the Wiki Book you just created. The special aspect of these books, is the easy navigation that comes with the hierarchial structuring of the pages. Above the wiki page, you can now see links that allow you to move forwards, backwards and up one level using those simple navigational links.
-'),
-	array(
+'],
+	[
 		'title' => 'How to set your Wiki Homepage',
 		'description' => 'How to set a specific wikipage as home',
 		'edit' => 'This page will guide you through the process of defining a particular wikipage as you Wiki HomePage.
@@ -144,8 +144,8 @@ Now that we have created a Wiki Book, we want to view it and see what all this w
 '.$admin_link.'__Wiki__ --> __Wiki Settings__
 
 Clicking this link will take you to a page with a massive number of options. The one we are interested in, are all in the __Wiki Settings__ tab. The topmost setting is the one we want. The name of the page you enter here, will be the one tha is first shown when clicking on the __Wiki Home__ link in the ===Application Menu=== or the __Wiki__ link in the ===top bar menu===.
-'),
-	array(
+'],
+	[
 		'title' => 'bitweaver Glossary',
 		'description' => 'Definition of Frequently used Terms',
 		'edit' => ';Package:A Package is a part of bitweaver that can manipulate, store and/or display information. Packages are always self-contained entities that can be installed, or uninstalled should require additional functionality. A list of currently available packages can be found on [http://www.bitweaver.org|bitweaver]. bitweaver differentiates between internal and foreign packages. Internal packages are packages that have been created inhouse and are meant to work with bitweaver from the ground up and will probably not work with any other application. a Foreign Package is usually a standalone application that has been modified in a way to fit into bitweaver. We try and keep these modifications to a minimum, allowing for easy upgrades to new versions.
@@ -155,12 +155,12 @@ Clicking this link will take you to a page with a massive number of options. The
 ;Group:In bitweaver groups are given permissions. You can then assign users to various groups. this makes it easy to allow a set of users to edit wiki pages but not edit blogs or vice versa.
 ;User:When a user registers with your site, that user is added to your database. every user has a defined set of permissions that allow them to access particular parts of your site. to manage these permissions, you have to first define groups and allocate permissions to them.
 ;Content:Content is any text that is intered into bitweaver that is stored in the central liberty tables. storing the content in one place makes it accesible from various different places allowing users to mix and match such content as they see fit. This makes it possible to easily display images in a wiki text or even display a blog post in an article since they are all considered to be the same.
-'),
-);
+'],
+];
 
 foreach( $pageHash as $page ) {
 	// common settings for all of these pages
-	$page['fSavePage']   = TRUE;
+	$page['fSavePage']   = true;
 	$page['user_id']     = ROOT_USER_ID;
 	$page['format_guid'] = 'tikiwiki';
 
@@ -172,4 +172,3 @@ foreach( $pageHash as $page ) {
 		$gBitSmarty->assign( 'error',$error );
 	}
 }
-?>
