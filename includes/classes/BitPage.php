@@ -13,7 +13,12 @@
 /**
  * required setup
  */
-require_once( LIBERTY_PKG_CLASS_PATH.'LibertyMime.php' );
+namespace Bitweaver\Wiki;
+use Bitweaver\BitBase;
+use Bitweaver\KernelTools;
+use Bitweaver\BitCacheable;
+use Bitweaver\Liberty\LibertyContent;
+use Bitweaver\Liberty\LibertyMime;
 
 /**
  * @package wiki
@@ -22,16 +27,16 @@ class BitPage extends LibertyMime implements BitCacheable {
 	public $mPageId;
 	public $mPageName;
 
-	function __construct( $pPageId=NULL, $pContentId=NULL ) {
+	public function __construct( $pPageId=null, $pContentId=null ) {
 		parent::__construct();
-		$this->registerContentType( BITPAGE_CONTENT_TYPE_GUID, array(
+		$this->registerContentType( BITPAGE_CONTENT_TYPE_GUID, [
 				'content_type_guid' => BITPAGE_CONTENT_TYPE_GUID,
 				'content_name' => 'Wiki Page',
 				'handler_class' => 'BitPage',
 				'handler_package' => 'wiki',
 				'handler_file' => 'BitPage.php',
 				'maintainer_url' => 'http://www.bitweaver.org'
-			) );
+			] );
 		$this->mPageId = (int)$pPageId;
 		$this->mContentId = (int)$pContentId;
 		$this->mContentTypeGuid = BITPAGE_CONTENT_TYPE_GUID;
@@ -56,22 +61,22 @@ class BitPage extends LibertyMime implements BitCacheable {
 	}
 
 	public function __sleep() {
-		return array_merge( parent::__sleep(), array( 'mPageId', 'mPageName' ) );
+		return array_merge( parent::__sleep(), [ 'mPageId', 'mPageName' ] );
 	}
 
-	public static function findContentIdByPageId( $pPageId ) {
+	public static function findContentIdByPageId( int $pPageId ) {
 		global $gBitDb;
-		$ret = NULL;
+		$ret = null;
 		if( BitBase::verifyId( $pPageId ) ) {
-			$ret = $gBitDb->getOne( "SELECT `content_id` FROM `".BIT_DB_PREFIX."wiki_pages` WHERE `page_id`=?", array( (int)$pPageId ) );
+			$ret = $gBitDb->getOne( "SELECT `content_id` FROM `".BIT_DB_PREFIX."wiki_pages` WHERE `page_id`=?", [ (int)$pPageId ] );
 		}
 		return $ret;
 	}
 
-	function findByPageName( $pPageName, $pUserId=NULL ) {
+	public function findByPageName( string $pPageName, int $pUserId = -2 ) {
 		$userWhere = '';
-		$bindVars = array( $pPageName, $this->mContentTypeGuid );
-		if( @BitBase::verifyId( $pUserId ) ) {
+		$bindVars = [ $pPageName, $this->mContentTypeGuid ];
+		if( BitBase::verifyId( $pUserId ) ) {
 			$userWhere = " AND lc.`user_id`=?";
 			array_push( $bindVars, $pUserId );
 		}
@@ -118,19 +123,20 @@ class BitPage extends LibertyMime implements BitCacheable {
 
 	/**
 	 * Determines if a wiki page (row in wiki_pages) exists, and returns a hash of important info. If N pages exists with $pPageName, returned existsHash has a row for each unique pPageName row.
-	 * @param pPageName name of the wiki page
-	 * @param pCaseSensitive look for case sensitive names
-	 * @param pContentId if you insert the content id of the currently viewed content, non-existing links can be created immediately
+	 * @param string $pPageName name of the wiki page
+	 * @param bool $pCaseSensitive look for case sensitive names
+	 * @param int $pContentId if you insert the content id of the currently viewed content, non-existing links can be created immediately
+	 * @return array $infoHash
 	 */
-	public static function pageExists( $pPageName, $pCaseSensitive=FALSE, $pContentId=NULL ) {
+	public static function pageExists( string $pPageName, bool $pCaseSensitive = false, $pContentId = 0 ) {
 		global $gBitSystem;
-		$ret = NULL;
+		$ret = null;
 
 		if( $gBitSystem->isPackageActive( 'wiki' ) ) {
 			$columnExpression = $gBitSystem->mDb->getCaseLessColumn('lc.title');
 
 			$pageWhere = $pCaseSensitive ? 'lc.`title`' : $columnExpression;
-			$bindVars = array( ($pCaseSensitive ? $pPageName : strtoupper( $pPageName ) ) );
+			$bindVars = [ $pCaseSensitive ? $pPageName : strtoupper( $pPageName ) ];
 			$query = "SELECT `page_id`, wp.`content_id`, lcds.`data` AS `summary`, lc.`last_modified`, lc.`title`
 				FROM `".BIT_DB_PREFIX."wiki_pages` wp
 					INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (lc.`content_id`=wp.`content_id`)
@@ -152,27 +158,25 @@ class BitPage extends LibertyMime implements BitCacheable {
 	/**
 	 * load
 	 *
-	 * @access public
-	 * @return TRUE on success, FALSE on failure - mErrors will contain reason for failure
+	 * @return bool true on success, false on failure - mErrors will contain reason for failure
 	 */
-	function load( $pContentId=NULL, $pPluginParams = TRUE ) {
+	public function load() {
 		if( $this->verifyId( $this->mPageId ) || $this->verifyId( $this->mContentId ) ) {
 			global $gBitSystem;
 
-			$lookupColumn = @BitBase::verifyId( $this->mPageId ) ? 'page_id' : 'content_id';
-			$parse = ( !isset( $pPluginParams['parse'] ) or $pPluginParams['parse'] ) ? true : false;
-			$bindVars = array(); $selectSql = ''; $joinSql = ''; $whereSql = '';
-			array_push( $bindVars, $lookupId = @BitBase::verifyId( $this->mPageId )? $this->mPageId : $this->mContentId );
+			$lookupColumn = BitBase::verifyId( $this->mPageId ) ? 'page_id' : 'content_id';
+			$parse = true; // ( !isset( $pPluginParams['parse'] ) or $pPluginParams['parse'] ) ? true : false;
+			$bindVars = []; $selectSql = ''; $joinSql = ''; $whereSql = '';
+			array_push( $bindVars, $lookupId = BitBase::verifyId( $this->mPageId )? $this->mPageId : $this->mContentId );
 			$this->getServicesSql( 'content_load_sql_function', $selectSql, $joinSql, $whereSql, $bindVars );
 
 			$query = "
-				SELECT wp.*, lc.*, lcds.`data` AS `summary`, lcdm.`data` as `metatags`,
+				SELECT wp.*, lc.*, lcds.`data` AS `summary`,
 				uue.`login` AS modifier_user, uue.`real_name` AS modifier_real_name,
 				uuc.`login` AS creator_user, uuc.`real_name` AS creator_real_name $selectSql
 				FROM `".BIT_DB_PREFIX."wiki_pages` wp
 					INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (lc.`content_id` = wp.`content_id`) $joinSql
 					LEFT OUTER JOIN `".BIT_DB_PREFIX."liberty_content_data` lcds ON (lc.`content_id` = lcds.`content_id` AND lcds.`data_type`='summary')
-					LEFT OUTER JOIN `".BIT_DB_PREFIX."liberty_content_data` lcdm ON (lc.`content_id` = lcdm.`content_id` AND lcdm.`data_type`='metatags')
 					LEFT JOIN `".BIT_DB_PREFIX."users_users` uue ON (uue.`user_id` = lc.`modifier_user_id`)
 					LEFT JOIN `".BIT_DB_PREFIX."users_users` uuc ON (uuc.`user_id` = lc.`user_id`)
 				WHERE wp.`$lookupColumn`=? $whereSql";
@@ -180,11 +184,11 @@ class BitPage extends LibertyMime implements BitCacheable {
 				$this->mContentId = $this->mInfo['content_id'];
 				$this->mPageId = $this->mInfo['page_id'];
 				$this->mPageName = $this->mInfo['title'];
-				$this->mInfo['display_url'] = $this->getDisplayUrl( $this->mPageName );
+				$this->mInfo['display_url'] = $this->getDisplayUrl();
 
-				// TODO: this is a bad habbit and should not be done BitUser::getDisplayName sorts out what name to display
-				$this->mInfo['creator'] = (isset( $this->mInfo['creator_real_name'] ) ? $this->mInfo['creator_real_name'] : $this->mInfo['creator_user'] );
-				$this->mInfo['editor'] = (isset( $this->mInfo['modifier_real_name'] ) ? $this->mInfo['modifier_real_name'] : $this->mInfo['modifier_user'] );
+				// TODO: this is a bad habbit and should not be done RoleUser::getDisplayName sorts out what name to display
+				$this->mInfo['creator'] = $this->mInfo['creator_real_name'] ?? $this->mInfo['creator_user'];
+				$this->mInfo['editor'] = $this->mInfo['modifier_real_name'] ?? $this->mInfo['modifier_user'];
 
 				// Save some work if wiki_attachments are not active
 				// get prefs before we parse the data that we know how to parse the data
@@ -198,23 +202,20 @@ class BitPage extends LibertyMime implements BitCacheable {
 					$this->getParsedData();
 				}
 			} else {
-				$this->mPageId = NULL;
+				$this->mPageId = 0;
 			}
 		}
-		return( count( $this->mInfo ) );
+		return count( $this->mInfo );
 	}
 
 	/**
 	* This is the ONLY method that should be called in order to store (create or update) a wiki page!
 	* It is very smart and will figure out what to do for you. It should be considered a black box.
 	*
-	* @param array pParams hash of values that will be used to store the page
-	*
-	* @return bool TRUE on success, FALSE if store could not occur. If FALSE, $this->mErrors will have reason why
-	*
-	* @access public
+	* @param array pParamHash hash of values that will be used to store the page
+	* @return bool true on success, false if store could not occur. If false, $this->mErrors will have reason why
 	**/
-	function store( &$pParamHash ) {
+	public function store( array &$pParamHash): bool {
 		$this->StartTrans();
 
 		if( $this->verify( $pParamHash ) && LibertyMime::store( $pParamHash ) ) {
@@ -222,15 +223,10 @@ class BitPage extends LibertyMime implements BitCacheable {
 
 			$table = BIT_DB_PREFIX."wiki_pages";
 			if( $this->verifyId( $this->mPageId ) ) {
-				$result = $this->mDb->associateUpdate( $table, $pParamHash['page_store'], array( "page_id" => $this->mPageId ) );
+				$result = $this->mDb->associateUpdate( $table, $pParamHash['page_store'], [ "page_id" => $this->mPageId ] );
 			} else {
 				$pParamHash['page_store']['content_id'] = $pParamHash['content_id'];
-				if( @$this->verifyId( $pParamHash['page_id'] ) ) {
-					// if pParamHash['page_id'] is set, some is requesting a particular page_id. Use with caution!
-					$pParamHash['page_store']['page_id'] = $pParamHash['page_id'];
-				} else {
-					$pParamHash['page_store']['page_id'] = $this->mDb->GenID( 'wiki_pages_page_id_seq');
-				}
+				$pParamHash['page_store']['page_id'] = @$this->verifyId( $pParamHash['page_id'] ) ? $pParamHash['page_id'] : $this->mDb->GenID( 'wiki_pages_page_id_seq');
 				$this->mPageId = $pParamHash['page_store']['page_id'];
 
 				$result = $this->mDb->associateInsert( $table, $pParamHash['page_store'] );
@@ -240,15 +236,15 @@ class BitPage extends LibertyMime implements BitCacheable {
 
 			if( isset( $mailEvents ) ) {
 				global $notificationlib, $gBitUser, $gBitSystem, $gBitSmarty;
-				include_once( KERNEL_PKG_INCLUDE_PATH.'notification_lib.php' );
+				include_once KERNEL_PKG_INCLUDE_PATH.'notification_lib.php';
 				$notificationlib->post_content_event($this->mContentId, $this->mInfo['content_type_guid'], 'wiki', $this->mInfo['title'], $this->mInfo['modifier_user'], $this->mInfo['edit_comment'], $this->mInfo['data']);
 
 				if( $gBitSystem->isFeatureActive( 'users_watches') ) {
 					$nots = $gBitUser->get_event_watches( 'wiki_page_changed', $this->mPageId );
 
 					foreach ($nots as $not) {
-#						if ($wiki_watch_editor != 'y' && $not['user_id'] == $user)
-#							break;
+						if ($wiki_watch_editor != 'y' && $not['user_id'] == $user)
+							break;
 						$gBitSmarty->assign('mail_site', $_SERVER["SERVER_NAME"]);
 
 						$gBitSmarty->assign('mail_page', $this->mInfo['title']);
@@ -259,24 +255,24 @@ class BitPage extends LibertyMime implements BitCacheable {
 						$gBitSmarty->assign('mail_data', $this->mInfo['data']);
 						$gBitSmarty->assign('mail_hash', $not['hash']);
 						$foo = parse_url($_SERVER["REQUEST_URI"]);
-						$machine = httpPrefix();
+						$machine = KernelTools::httpPrefix();
 						$gBitSmarty->assign('mail_machine', $machine);
 						$parts = explode('/', $foo['path']);
 
 						if (count($parts) > 1)
 							unset ($parts[count($parts) - 1]);
 
-						$gBitSmarty->assign('mail_machine_raw', httpPrefix(). implode('/', $parts));
+						$gBitSmarty->assign('mail_machine_raw', KernelTools::httpPrefix(). implode('/', $parts));
 						$gBitSmarty->assign('mail_pagedata', $this->mInfo['data']);
 						$mail_data = $gBitSmarty->fetch('bitpackage:wiki/user_watch_wiki_page_changed.tpl');
 						$email_to = $not['email'];
-						@mail($email_to, tra('Wiki page'). ' ' . $this->mInfo['title'] . ' ' . tra('changed'), $mail_data, "From: ".$gBitSystem->getConfig( 'site_sender_email' )."\r\nContent-type: text/plain;charset=utf-8\r\n");
+						@mail($email_to, KernelTools::tra('Wiki page'). ' ' . $this->mInfo['title'] . ' ' . KernelTools::tra('changed'), $mail_data, "From: ".$gBitSystem->getConfig( 'site_sender_email' )."\r\nContent-type: text/plain;charset=utf-8\r\n");
 					}
 				}
 			}
 		}
 		$this->CompleteTrans();
-		return( count( $this->mErrors ) == 0 );
+		return count( $this->mErrors ) == 0;
 	}
 
 	/**
@@ -285,11 +281,11 @@ class BitPage extends LibertyMime implements BitCacheable {
 	*
 	* @param array pParams reference to hash of values that will be used to store the page, they will be modified where necessary
 	*
-	* @return bool TRUE on success, FALSE if verify failed. If FALSE, $this->mErrors will have reason why
+	* @return bool true on success, false if verify failed. If false, $this->mErrors will have reason why
 	*
 	* @access private
 	**/
-	function verify( &$pParamHash ) {
+	public function verify( array &$pParamHash ): bool {
 		global $gBitUser, $gBitSystem;
 
 		// make sure we're all loaded up of we have a mPageId
@@ -306,7 +302,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 			$pParamHash['content_type_guid'] = $this->mContentTypeGuid;
 		}
 
-		if( @$this->verifyIdParameter( $pParamHash, 'content_id' ) ) {
+		if( @$this->verifyId( $pParamHash['content_id'] ?? 0 ) ) {
 			$pParamHash['page_store']['content_id'] = $pParamHash['content_id'];
 		}
 
@@ -328,7 +324,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 					}
 				}
 			} else {
-				$pParamHash['content_store']['title'] = ( isset( $pParamHash['title'] ) ) ? substr( $pParamHash['title'], 0, 160 ) : $this->mPageName;
+				$pParamHash['content_store']['title'] = isset( $pParamHash['title'] ) ? substr( $pParamHash['title'], 0, 160 ) : $this->mPageName;
 				if ($gBitSystem->isFeatureActive( 'wiki_allow_dup_page_names')) {
 					# silently allow pages with duplicate names to be created
 				} else {
@@ -343,11 +339,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 			}
 		}
 
-		if( empty( $pParamHash['edit_comment'] ) ) {
-			$pParamHash['page_store']['edit_comment'] = NULL;
-		} else {
-			$pParamHash['page_store']['edit_comment'] = substr( $pParamHash['edit_comment'], 0, 200 );
-		}
+		$pParamHash['page_store']['edit_comment'] = empty( $pParamHash['edit_comment'] ) ? null : substr( $pParamHash['edit_comment'], 0, 200 );
 
 		if( !empty( $pParamHash['minor'] ) && $this->isValid() ) {
 			// we can only minor save over our own versions
@@ -361,60 +353,58 @@ class BitPage extends LibertyMime implements BitCacheable {
 			parent::verify( $pParamHash );
 		}
 
-		return( count( $this->mErrors ) == 0 );
+		return count( $this->mErrors ) == 0;
 	}
 
 	/**
 	 * Remove page from database
 	 */
-	function expunge() {
-		$ret = FALSE;
+	public function expunge(): bool {
 		if( $this->isValid() ) {
 			$this->StartTrans();
 			$this->expungeVersion(); // will nuke all versions
 			$query = "DELETE FROM `".BIT_DB_PREFIX."wiki_pages` WHERE `content_id` = ?";
-			$result = $this->mDb->query( $query, array( $this->mContentId ) );
+			$result = $this->mDb->query( $query, [ $this->mContentId ] );
 			if( LibertyMime::expunge() ) {
-				$ret = TRUE;
 				$this->CompleteTrans();
 			} else {
 				$this->mDb->RollbackTrans();
 			}
 		}
-		return $ret;
+		return true;
 	}
 
-	function isUserPage() {
-		$ret = FALSE;
+	public function isUserPage() {
+		$ret = false;
 		if( $this->mPageName ) {
 			$ret = preg_match( '/^UserPage(.*)/', $this->mPageName, $matches );
 		}
 		return $ret;
 	}
 
-	function isValid() {
-		return( $this->verifyId( $this->mPageId ) );
+	public function isValid() {
+		return $this->verifyId( $this->mPageId );
 	}
 
-	function isLocked() {
-		$ret = FALSE;
+	public function isLocked(): bool {
+		$ret = false;
 		if( $this->verifyId( $this->mPageId ) ) {
 			if( empty( $this->mInfo ) ) {
 				$this->load();
 			}
-			$ret = $this->getField( 'flag' ) == 'L';
+			$ret = $this->getField( 'flag', false );
 		}
-		return( $ret );
+		return $ret;
 	}
 
-	function isCommentable() {
+	public function isCommentable() {
 		global $gBitSystem;
-		return( $gBitSystem->isFeatureActive( 'wiki_comments' ));
+		return $gBitSystem->isFeatureActive( 'wiki_comments' );
 	}
 
-	function setLock( $pLock, $pModUserId=NULL ) {
+	public function setLock( $pLock, $pModUserId=null ) {
 		if( $this->verifyId( $this->mPageId ) ) {
-			$bindVars = array();
+			$bindVars = [];
 			$userSql = '';
 			if( $pModUserId ) {
 				$userSql = "`modifier_user_id`=?, ";
@@ -428,63 +418,64 @@ class BitPage extends LibertyMime implements BitCacheable {
 		return true;
 	}
 
-	function lock( $pModUserId=NULL ) {
-		return( $this->setLock( 'L', $pModUserId ) );
+	public function lock( $pModUserId=null ) {
+		return $this->setLock( 'L', $pModUserId );
 	}
 
-	function unlock( $pModUserId=NULL ) {
-		return( $this->setLock( NULL, $pModUserId ) );
+	public function unlock( $pModUserId=null ) {
+		return $this->setLock( null, $pModUserId );
 	}
 
 	// *********  Footnote functions for the wiki ********** //
 	/**
 	 *  Store footnote
 	 */
-	function storeFootnote($pUserId, $pData) {
+	public function storeFootnote($pUserId, $pData) {
 		if( $this->verifyId( $this->mPageId ) ) {
 			$querydel = "delete from `".BIT_DB_PREFIX."wiki_footnotes` where `user_id`=? and `page_id`=?";
-			$this->mDb->query( $querydel, array( $pUserId, $this->mPageId ) );
+			$this->mDb->query( $querydel, [ $pUserId, $this->mPageId ] );
 			$query = "insert into `".BIT_DB_PREFIX."wiki_footnotes`(`user_id`,`page_id`,`data`) values(?,?,?)";
-			$this->mDb->query( $query, array( $pUserId, $this->mPageId, $pData ) );
+			$this->mDb->query( $query, [ $pUserId, $this->mPageId, $pData ] );
 		}
 	}
 
 	/**
 	 *  Delete footnote
 	 */
-	function expungeFootnote( $pUserId ) {
+	public function expungeFootnote( $pUserId ) {
 		if( $this->verifyId( $this->mPageId ) ) {
 			$query = "delete from `".BIT_DB_PREFIX."wiki_footnotes` where `user_id`=? and `page_id`=?";
-			$this->mDb->query($query,array($pUserId,$this->mPageId));
+			$this->mDb->query( $query, [$pUserId,$this->mPageId] );
 		}
 	}
 
 	/**
 	 *  Get footnote
 	 */
-	function getFootnote( $pUserId ) {
+	public function getFootnote( int $pUserId ) {
 		if( $this->verifyId( $this->mPageId ) ) {
-			$count = $this->mDb->getOne( "select count(*) from `".BIT_DB_PREFIX."wiki_footnotes` where `user_id`=? and `page_id`=?", array( $pUserId, $this->mPageId ) );
+			$count = $this->mDb->getOne( "select count(*) from `".BIT_DB_PREFIX."wiki_footnotes` where `user_id`=? and `page_id`=?", [ $pUserId, $this->mPageId ] );
 			if( $count ) {
-				return $this->mDb->getOne("select `data` from `".BIT_DB_PREFIX."wiki_footnotes` where `user_id`=? and `page_id`=?",array( $pUserId, $this->mPageId ) );
+				return $this->mDb->getOne("select `data` from `".BIT_DB_PREFIX."wiki_footnotes` where `user_id`=? and `page_id`=?",[ $pUserId, $this->mPageId ] );
 			}
 		}
+		return false;
 	}
 
 	/**
 	* Generates a link to a wiki page within lists of pages
-	* @return the link to display the page.
+	* @return string the link to display the page.
 	*/
-	function getListLink( $pParamHash ) {
-		return BitPage::getPageLink( $pParamHash['title'], NULL );
+	public function getListLink( $pParamHash ) {
+		return BitPage::getPageLink( $pParamHash['title'], null );
 	}
 
 
 	/**
 	* Returns include file that will
-	* @return the fully specified path to file to be included
+	* @return string the fully specified path to file to be included
 	*/
-	function getRenderFile() {
+	public function getRenderFile() {
 		return WIKI_PKG_INCLUDE_PATH."display_bitpage_inc.php";
 	}
 
@@ -492,7 +483,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 	/**
 	 * Returns the center template for the view selected
 	 */
-	function getViewTemplate( $pAction ){
+	public function getViewTemplate( $pAction ){
 		$ret = null;
 		switch ( $pAction ){
 			case "view":
@@ -513,13 +504,13 @@ class BitPage extends LibertyMime implements BitCacheable {
 	 * an appropriate title string
 	 * @return string Descriptive title for the page
 	 */
-	function getTitle() {
+	public function getTitle() {
 		$ret = $this->getField('title');
 		if( $this->isValid() ) {
 			$ret = static::getTitleFromHash( $this->mInfo );
 			$requestPage = strtoupper( self::getParameter( $_REQUEST, 'page' ) ?? '' );
 			if( $requestPage && $requestPage != strtoupper( $this->mInfo['title'] ) ) {
-				$aliases = $this->getAliases( TRUE );
+				$aliases = $this->getAliases( true );
 				if( in_array( $requestPage, $aliases ) ) {
 					$ret = $_REQUEST['page'];
 				}
@@ -530,8 +521,8 @@ class BitPage extends LibertyMime implements BitCacheable {
 
 	/**
 	* Generates the URL to this wiki page
-	* @param pExistsHash the hash that was returned by LibertyContent::pageExists
-	* @return the link to display the page.
+	* @param$pExistsHash the hash that was returned by LibertyContent::pageExists
+	* @return string the link to display the page.
 	*/
 	public static function getDisplayUrlFromHash( &$pParamHash ) {
 		global $gBitSystem;
@@ -552,35 +543,30 @@ class BitPage extends LibertyMime implements BitCacheable {
 
 	/**
 	* Returns HTML link to display a page if it exists, or to create if not
-	* @param pExistsHash the hash that was returned by LibertyContent::pageExists
-	* @return the link to display the page.
+	* @param string $pLinkText 
+	* @param string|array $pExistsHash the hash that was returned by LibertyContent::pageExists
+	* @param string $pAnchor 
+	* @return string the link to display the page.
 	*/
-	public static function getPageLink( $pLinkText=NULL, $pMixed=NULL, $pAnchor=NULL ) {
+	public static function getPageLink( string $pLinkText = '', string|array $pExistsHash = '', string $pAnchor = '' ): string {
 		global $gBitSystem, $gBitUser;
 		$ret = $pLinkText;
 		if( $gBitSystem->isPackageActive( 'wiki' ) ) {
-			if( !empty( $pMixed ) && is_array( $pMixed ) ) {
-				if( is_array( current( $pMixed ) ) ) {
-					$exists = $pMixed[0];
-					$multiple = TRUE;
+			if( !empty($pExistsHash ) && is_array($pExistsHash ) ) {
+				if( is_array( current($pExistsHash ) ) ) {
+					$exists =$pExistsHash[0];
+					$multiple = true;
 				} else {
-					$exists = $pMixed;
-					$multiple = FALSE;
+					$exists =$pExistsHash;
+					$multiple = false;
 				}
 
 				// we have a multi-demensional array (likely returned from LibertyContent::pageExists() ) - meaning we potentially have multiple pages with the same name
-				if( $multiple ) {
-					$desc = tra( 'Multiple pages with this name' );
-				} else {
-					$desc = empty( $exists['summary'] ) ? $exists['title'] : $exists['summary'];
-				}
+				$desc = $multiple ? KernelTools::tra( 'Multiple pages with this name' ) : ( empty( $exists['summary'] ) ? $exists['title'] : $exists['summary'] );
+
 				$ret = '<a title="'.htmlspecialchars( $desc ).'" href="'.BitPage::getDisplayUrlFromHash( $exists ).'">'.htmlspecialchars( $exists['title'] ).'</a>';
 			} else {
-				if( $gBitUser->hasPermission( 'p_wiki_create_page' ) ) {
-					$ret = '<a title="'.tra( "Create the page" ).': '.htmlspecialchars( $pLinkText ).'" href="'.WIKI_PKG_URL.'edit.php?page='.urlencode( $pLinkText ).'" class="create">'.htmlspecialchars( $pLinkText ).'</a>';
-				} else {
-					$ret = $pLinkText;
-				}
+				$ret = $gBitUser->hasPermission( 'p_wiki_create_page' ) ? '<a title="'.KernelTools::tra( "Create the page" ).': '.htmlspecialchars( $pLinkText ).'" href="'.WIKI_PKG_URL.'edit.php?page='.urlencode( $pLinkText ).'" class="create">'.htmlspecialchars( $pLinkText ).'</a>' : $pLinkText;
 			}
 		}
 		return $ret;
@@ -588,35 +574,48 @@ class BitPage extends LibertyMime implements BitCacheable {
 
 	/**
 	* Returns content_id's that link to this page
-	* @return hash of content
+	* @return array hash of content
 	*/
-	function getBacklinks() {
+	public function getBacklinks() {
+		$ret =  [];
 		if( $this->isValid() ) {
 			$to_title = $this->mInfo['title'];
-			$query = "SELECT lcl.`from_content_id`, lc.`title`
-					  FROM `".BIT_DB_PREFIX."liberty_content_links` lcl INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (lcl.`from_content_id`=lc.`content_id`)
-					  WHERE lcl.`to_title` = ? ORDER BY lcl.POS";
-			$ret = $this->mDb->getAssoc( $query, array( $to_title ) );
-			return $ret;
+			$query = "SELECT `content_id`, `title`, `to_title`, url
+					  FROM ( SELECT lc.`content_id`, lc.`title`, lcl.`to_title`, 'wiki/' || lc.`title` AS url
+						FROM `".BIT_DB_PREFIX."liberty_content_links` lcl 
+						INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (lcl.`from_content_id` = lc.`content_id`)
+						LEFT JOIN `".BIT_DB_PREFIX."wiki_pages` wp ON (lcl.`from_content_id` = wp.`content_id`)
+						WHERE lc.`content_type_guid` = 'bitpage'
+						UNION ALL
+						SELECT lc.`content_id`, COALESCE( lc.`title`, CAST ( DATEADD( SECOND, bl.`publish_date`, timestamp '1/1/1970 00:00:00' ) AS DATE ) ) AS TITLE, lcb.`to_title`, 'blogs/post/' || BL.`post_id` AS url
+						FROM ".BIT_DB_PREFIX."liberty_content_links lcb
+						INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (lcb.`from_content_id` = lc.`content_id`)
+						LEFT JOIN `".BIT_DB_PREFIX."blog_posts` bl ON (lcb.`from_content_id` = bl.`content_id`)
+						WHERE lc.`content_type_guid` = 'bitblogpost'
+					  )
+					  WHERE `to_title` = ?
+					  ORDER BY `title`";
+			$ret = $this->mDb->getAssoc( $query, [ $to_title ] );
 		}
+		return $ret;
 	}
 
 
 	/**
 	 * Roll back to a specific version of a page
-	 * @param pVersion Version number to roll back to
-	 * @param comment Comment text to be added to the action log
-	 * @return TRUE if completed successfully
+	 * @param int $pVersion Version number to roll back to
+	 * @param string $comment Comment text to be added to the action log
+	 * @return bool true if completed successfully
 	 */
-	function rollbackVersion( $pVersion, $comment = '' ) {
+	public function rollbackVersion( int $pVersion, string $comment = '' ): bool {
 		global $gBitSystem;
-		$ret = FALSE;
+		$ret = false;
 		if( parent::rollbackVersion( $pVersion, $comment ) ) {
 			$action = "Changed actual version to $pVersion";
 			$t = $gBitSystem->getUTCTime();
 			$query = "insert into `".BIT_DB_PREFIX."liberty_action_log`(`log_message`,`content_id`,`last_modified`,`user_id`,`ip`,`error_message`) values(?,?,?,?,?,?)";
-			$result = $this->mDb->query($query,array($action,$this->mContentId,$t,ROOT_USER_ID,$_SERVER["REMOTE_ADDR"],$comment));
-			$ret = TRUE;
+			$result = $this->mDb->query($query,[$action,$this->mContentId,$t,ROOT_USER_ID,$_SERVER["REMOTE_ADDR"],$comment]);
+			$ret = true;
 		}
 		return $ret;
 	}
@@ -625,16 +624,16 @@ class BitPage extends LibertyMime implements BitCacheable {
 	 * getList
 	 *
 	 * @param array $pListHash array of list parameters
-	 * @param boolean $pListHash['orphans_only'] only return orphan wiki pages
-	 * @param boolean $pListHash['extras'] load extra infrmation such as backlinks and links
-	 * @param boolean $pListHash['get_data'] return the wiki page data along with the listed information
-	 * @param string $pListHash['find_title'] filter by the page title
-	 * @param string $pListHash['find_author'] filter by the login name of the page author
-	 * @param string $pListHash['find_last_editor'] filter by the login name of the last editor of the page
+	 *		- boolean ['orphans_only'] only return orphan wiki pages
+	 *		- boolean ['extras'] load extra infrmation such as backlinks and links
+	 *		- boolean ['get_data'] return the wiki page data along with the listed information
+	 *		- string  ['find_title'] filter by the page title
+	 *		- string  ['find_author'] filter by the login name of the page author
+	 *		- string  ['find_last_editor'] filter by the login name of the last editor of the page
 	 * @access public
 	 * @return array of wiki pages
 	 */
-	function getList( &$pListHash ) {
+	public function getList( array &$pListHash ): array {
 		global $gBitSystem, $gBitUser;
 		LibertyContent::prepGetList( $pListHash );
 
@@ -642,16 +641,16 @@ class BitPage extends LibertyMime implements BitCacheable {
 			$pListHash['sort_mode'] = str_replace( 'size', 'wiki_page_size', $pListHash['sort_mode'] );
 		}
 
-		$specialSort = array(
+		$specialSort = [
 			'versions_desc',
 			'versions_asc',
 			'links_asc',
 			'links_desc',
 			'backlinks_asc',
 			'backlinks_desc'
-		);
+		];
 
-		if( in_array( $pListHash['sort_mode'], $specialSort )) {
+		if( in_array( $pListHash['sort_mode'], $specialSort ) ) {
 			$originalListHash         = $pListHash;
 			// now we can set the new values in the pListHash
 			$pListHash['sort_mode']   = 'modifier_user_desc';
@@ -660,8 +659,8 @@ class BitPage extends LibertyMime implements BitCacheable {
 		}
 
 		$whereSql = $joinSql = $selectSql = '';
-		$bindVars = array();
-		$this->getServicesSql( 'content_list_sql_function', $selectSql, $joinSql, $whereSql, $bindVars, NULL, $pListHash );
+		$bindVars = [];
+		$this->getServicesSql( 'content_list_sql_function', $selectSql, $joinSql, $whereSql, $bindVars, null, $pListHash );
 
 		if ( !empty( $pListHash['content_type_guid'] ) ) {
 			$whereSql .= " AND lc.`content_type_guid`=? ";
@@ -679,25 +678,25 @@ class BitPage extends LibertyMime implements BitCacheable {
 			$bindVars = array_merge( $bindVars, $pListHash['find_title'] );
 		} elseif( !empty( $pListHash['find_title'] ) && is_string( $pListHash['find_title'] )) {
 			$whereSql .= " AND UPPER(lc.`title`) LIKE ? ";
-			$bindVars = array_merge( $bindVars, array( '%'.strtoupper( $pListHash['find_title'] ) . '%' ));
+			$bindVars = array_merge( $bindVars, [ '%'.strtoupper( $pListHash['find_title'] ) . '%' ]);
 		}
 
 		// limit by user id
-		if( @BitBase::verifyIdParameter( $pListHash, 'user_id' )) {
+		if( BitBase::verifyId( $pListHash['user_id'] ?? 0 )) {
 			$whereSql .= " AND lc.`user_id` = ? ";
-			$bindVars = array_merge( $bindVars, array( $pListHash['user_id'] ));
+			$bindVars = array_merge( $bindVars, [ $pListHash['user_id'] ]);
 		}
 
 		// filter pages by author login
 		if( !empty( $pListHash['find_author'] )) {
 			$whereSql .= " AND UPPER(uuc.`login`) = ? ";
-			$bindVars = array_merge( $bindVars, array( strtoupper( $pListHash['find_author'] )));
+			$bindVars = array_merge( $bindVars, [ strtoupper( $pListHash['find_author'] ) ] );
 		}
 
 		// filter pages by last editor
 		if( !empty( $pListHash['find_last_editor'] )) {
 			$whereSql .= " AND UPPER(uue.`login`) = ? ";
-			$bindVars = array_merge( $bindVars, array( strtoupper( $pListHash['find_last_editor'] )));
+			$bindVars = array_merge( $bindVars, [ strtoupper( $pListHash['find_last_editor'] ) ] );
 		}
 
 		$get_data = '';
@@ -731,7 +730,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 				$whereSql
 				";
 		} else {
-			$whereSql .= ' AND lcl.`to_content_id` is NULL ';
+			$whereSql .= ' AND lcl.`to_content_id` is null ';
 			$whereSql =  preg_replace('/^ AND */',' WHERE ', $whereSql);
 			$query = "SELECT
 					uue.`login` AS modifier_user, uue.`real_name` AS modifier_real_name, uuc.`login` AS creator_user, uuc.`real_name` AS creator_real_name,
@@ -761,7 +760,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 		// If sort mode is links then offset is 0, max_records is -1 (again) and sort_mode is nil
 		// If sort mode is backlinks then offset is 0, max_records is -1 (again) and sort_mode is nil
 
-		$ret = array();
+		$ret = [];
 		$this->StartTrans();
 
 		# get count of total number of items available
@@ -779,19 +778,19 @@ class BitPage extends LibertyMime implements BitCacheable {
 		$result = $this->mDb->query( $query, $bindVars, $pListHash['max_records'], $pListHash['offset'] );
 		$this->CompleteTrans();
 		while( $res = $result->fetchRow() ) {
-			$aux = array();
+			$aux = [];
 			$aux = $res;
-			$aux['creator'] = (isset( $res['creator_real_name'] ) ? $res['creator_real_name'] : $res['creator_user'] );
-			$aux['editor'] = (isset( $res['modifier_real_name'] ) ? $res['modifier_real_name'] : $res['modifier_user'] );
+			$aux['creator'] = isset( $res['creator_real_name'] ) ? $res['creator_real_name'] : $res['creator_user'];
+			$aux['editor'] = isset( $res['modifier_real_name'] ) ? $res['modifier_real_name'] : $res['modifier_user'];
 			$aux['flag'] = $res["flag"] == 'L' ? 'locked' : 'unlocked';
 			$aux['display_url'] = static::getDisplayUrlFromHash( $aux );
 			// display_link does not seem to be used when getList is called
 			//$aux['display_link'] = $this->getDisplayLink( $aux['title'] ); //WIKI_PKG_URL."index.php?page_id=".$res['page_id'];
 			if( !empty( $pListHash['extras'] )) {
 				// USE SPARINGLY!!! This gets expensive fast
-//				$aux['versions"]  = $this->mDb->getOne( "SELECT COUNT(*) FROM `".BIT_DB_PREFIX."liberty_content_history` WHERE `page_id`=?", array( $res["page_id"] ));
-				$aux['links']     = $this->mDb->getOne( "SELECT COUNT(*) FROM `".BIT_DB_PREFIX."liberty_content_links` WHERE `from_content_id`=?", array( $res["content_id"] ));
-				$aux['backlinks'] = $this->mDb->getOne( "select COUNT(*) FROM `".BIT_DB_PREFIX."liberty_content_links` WHERE `to_title`=?", array( $aux['title'] ));
+//				$aux['versions"]  = $this->mDb->getOne( "SELECT COUNT(*) FROM `".BIT_DB_PREFIX."liberty_content_history` WHERE `page_id`=?", [ $res["page_id"] ));
+				$aux['links']     = $this->mDb->getOne( "SELECT COUNT(*) FROM `".BIT_DB_PREFIX."liberty_content_links` WHERE `from_content_id`=?", [ $res["content_id"] ]);
+				$aux['backlinks'] = $this->mDb->getOne( "select COUNT(*) FROM `".BIT_DB_PREFIX."liberty_content_links` WHERE `to_title`=?", [ $aux['title'] ]);
 			}
 			$ret[] = $aux;
 		}
@@ -830,9 +829,9 @@ class BitPage extends LibertyMime implements BitCacheable {
 	 * $pHashOld the where conmdition : page_id
 	 * $pHashNew the new fields: title, data
 	 */
-	function update( $pHashOld, $pHashNew) {
-		$set = array();
-		$where = array();
+	public function update( $pHashOld, $pHashNew) {
+		$set = [];
+		$where = [];
 		if (!empty($pHashNew['title'])) {
 			$set[] = "lc.`title`=?";
 			$bindVars[] = $pHashNew['title'];
@@ -859,45 +858,39 @@ class BitPage extends LibertyMime implements BitCacheable {
 	}
 
 	// ...page... functions
-	function countSubPages( $pData ) {
-		return(( preg_match_all( '/'.( defined( 'PAGE_SEP' ) ? preg_quote( PAGE_SEP ) : '\.\.\.page\.\.\.').'/', $pData ?? '', $matches ) + 1 ));
+	public function countSubPages( $pData ) {
+		return preg_match_all( '/'.( defined( 'PAGE_SEP' ) ? preg_quote( PAGE_SEP ) : '\.\.\.page\.\.\.').'/', $pData ?? ''); // , $matches + 1 );
 	}
 
 	/**
 	 * getSubPage
 	 *
-	 * @param array $pData
-	 * @param array $pPageNumber
-	 * @access public
+	 * @param string $pData
+	 * @param int $pPageNumber
 	 * @return string SubPage
 	 */
-	function getSubPage( $pData, $pPageNumber ) {
+	public function getSubPage( string $pData, int $pPageNumber ): string {
 		// Get slides
 		$parts = explode( defined( 'PAGE_SEP' ) ? PAGE_SEP : "...page...", $pData );
-		if( substr( $parts[$pPageNumber - 1], 1, 5 ) == "<br/>" ) {
-			$ret = substr( $parts[$pPageNumber - 1], 6 );
-		} else {
-			$ret = $parts[$pPageNumber - 1];
-		}
+		$ret = substr( $parts[$pPageNumber - 1], 1, 5 ) == "<br/>" ? substr( $parts[$pPageNumber - 1], 6 ) : $parts[$pPageNumber - 1];
 		return $ret;
 	}
 
 	/**
 	 * getLikePages Like pages are pages that share a word in common with the current page
 	 *
-	 * @param array $pPageTitle
-	 * @access public
-	 * @return boolean TRUE on success, FALSE on failure - $this->mErrors will contain reason for failure
+	 * @param string $pPageTitle
+	 * @return array
 	 */
-	function getLikePages( $pPageTitle ) {
-		$ret = array();
+	public function getLikePages( string $pPageTitle ): array {
+		$ret = [];
 		if( !empty( $pPageName ) ) {
 			preg_match_all("/([A-Z])([a-z]+)/", $pPageTitle, $words);
 			// Add support to ((x)) in either strict or full modes
 			preg_match_all("/(([A-Za-z]|[\x80-\xFF])+)/", $pPageTitle, $words2);
 			$words = array_unique(array_merge($words[0], $words2[0]));
-			$exps = array();
-			$bindVars=array();
+			$exps = [];
+			$bindVars=[];
 			foreach ($words as $word) {
 				$exps[] = "`title` like ?";
 				$bindVars[] = "%$word%";
@@ -908,7 +901,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 			array_push( $bindVars, $this->mContentTypeGuid );
 			$this->getServicesSql( 'content_list_sql_function', $selectSql, $joinSql, $whereSql, $bindVars );
 
-			$query = "SELECT lc.`title` FROM `".BIT_DB_PREFIX."wiki_pages` wp INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (lc.`content_id` = wp.`content_id`) $join WHERE $whereSql";
+			$query = "SELECT lc.`title` FROM `".BIT_DB_PREFIX."wiki_pages` wp INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (lc.`content_id` = wp.`content_id`) $joinSql WHERE $whereSql";
 			$result = $this->mDb->query($query,$bindVars);
 			while ($res = $result->fetchRow()) {
 				$ret[] = $res["title"];
@@ -920,67 +913,66 @@ class BitPage extends LibertyMime implements BitCacheable {
 	/**
 	 * getStats getStats is always used by the stats package to display various stats of your package.
 	 *
-	 * @access public
-	 * @return boolean TRUE on success, FALSE on failure - $this->mErrors will contain reason for failure
+	 * @return array
 	 */
-	function getStats() {
+	public function getStats(): array {
 		global $gBitSystem;
-		$ret = array();
+		$ret = [];
 
 		$query = "SELECT COUNT(*) FROM `".BIT_DB_PREFIX."wiki_pages`";
-		$ret['pages'] = array(
+		$ret['pages'] = [
 			'label' => "Number of pages",
 			'value' => $this->mDb->getOne( $query ),
-		);
+		];
 
-		$listHash = array( 'orphans_only' => TRUE );
+		$listHash = [ 'orphans_only' => true ];
 		$this->getList( $listHash );
-		$ret['orphans'] = array(
+		$ret['orphans'] = [
 			'label' => 'Orphan Pages',
-			'value' => $listHash['listInfo']['total_records'],
-		);
+			'value' => $listHash['total_records'],
+		];
 
 		$query = "SELECT SUM(`wiki_page_size`) FROM `".BIT_DB_PREFIX."wiki_pages`";
-		$ret['size'] = array(
+		$ret['size'] = [
 			'label' => "Combined size",
 			'value' => $this->mDb->getOne( $query ),
 			'modifier' => 'display_bytes',
-		);
+		];
 
-		$ret['average_size'] = array(
+		$ret['average_size'] = [
 			'label' => 'Average page size',
 			'value' => $ret['size']['value'] / $ret['pages']['value'],
 			'modifier' => 'display_bytes',
-		);
+		];
 
 		$query = "
 			SELECT COUNT(*)
 			FROM `".BIT_DB_PREFIX."liberty_content_history` lch
 			INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON( lch.`content_id` = lc.`content_id` )
 			WHERE lc.`content_type_guid` = ?";
-		$ret['versions'] = array(
+		$ret['versions'] = [
 			'label' => "Versions",
-			'value' => $this->mDb->getOne( $query, array( BITPAGE_CONTENT_TYPE_GUID )),
-		);
+			'value' => $this->mDb->getOne( $query, [ BITPAGE_CONTENT_TYPE_GUID ]),
+		];
 
-		$ret['average_versions'] = array(
+		$ret['average_versions'] = [
 			'label' => 'Average versions per page',
 			'value' => round( $ret['versions']['value'] / $ret['pages']['value'], 3 ),
-		);
+		];
 
 		$query = "
 			SELECT COUNT(*) FROM `".BIT_DB_PREFIX."liberty_content_links` lcl
 			INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON( lcl.`from_content_id` = lc.`content_id` OR lcl.`from_content_id` = lc.`content_id` )
 			WHERE lc.`content_type_guid` = ?";
-		$ret['links'] = array(
+		$ret['links'] = [
 			'label' => "Total wiki links",
-			'value' => $this->mDb->getOne( $query, array( BITPAGE_CONTENT_TYPE_GUID )),
-		);
+			'value' => $this->mDb->getOne( $query, [ BITPAGE_CONTENT_TYPE_GUID ]),
+		];
 
-		$ret['average_links'] = array(
+		$ret['average_links'] = [
 			'label' => 'Average links per page',
 			'value' => round( $ret['links']['value'] / $ret['pages']['value'], 3 ),
-		);
+		];
 
 		return $ret;
 	}
@@ -989,13 +981,12 @@ class BitPage extends LibertyMime implements BitCacheable {
 	/**
 	 * linkStructureGraph
 	 *
+	 * @param object $pGraphViz
 	 * @param array $pLinkStructure
 	 * @param array $pParams
-	 * @param array $pGraphViz
-	 * @access public
-	 * @return boolean TRUE on success, FALSE on failure - $this->mErrors will contain reason for failure
+	 * @return void
 	 */
-	function linkStructureGraph( $pLinkStructure = array(), $pParams = array(), $pGraphViz = null ) {
+	public function linkStructureGraph( &$pGraphViz, $pLinkStructure = [], $pParams = [] ) {
 		if( !empty( $pLinkStructure ) && !empty( $pGraphViz )) {
 			$pParams['graph']['URL'] = WIKI_PKG_URL.'index.php';
 			$pGraphViz->addAttributes( $pParams['graph'] );
@@ -1004,8 +995,8 @@ class BitPage extends LibertyMime implements BitCacheable {
 			$pGraphViz->addNode( $pLinkStructure['name'], $pParams['node'] );
 
 			foreach( $pLinkStructure['pages'] as $node ) {
-				$this->linkStructureGraph( $node, $pParams, $pGraphViz );
-				$pGraphViz->addEdge( array( $pLinkStructure['name'] => $node['name'] ), $pParams['node'] );
+			    $this->linkStructureGraph( $pGraphViz,$node, $pParams );
+				$pGraphViz->addEdge( [ $pLinkStructure['name'] => $node['name'] ], $pParams['node'] );
 			}
 		}
 	}
@@ -1017,50 +1008,41 @@ class BitPage extends LibertyMime implements BitCacheable {
 	 * @param int $pLevel
 	 * @param array $pParams
 	 * @access public
-	 * @return boolean TRUE on success, FALSE on failure - $this->mErrors will contain reason for failure
+	 * @return string
 	 */
-	function linkStructureMap( $pPageName, $pLevel = 0, $pParams = array() ) {
-		if( !empty( $pPageName ) && @include_once( 'Image/GraphViz.php' )) {
-			$graph = new Image_GraphViz();
-			$this->linkStructureGraph( $this->getLinkStructure( $pPageName, $pLevel ), $pParams, $graph );
+	public function linkStructureMap( $pPageName, $pLevel = 0, $pParams = [] ) {
+		if( !empty( $pPageName ) && @include_once 'Image/GraphViz.php') {
+			$graph = new \Image_GraphViz();
+			$this->linkStructureGraph( $graph,$this->getLinkStructure( $pPageName, $pLevel ), $pParams );
 			return $graph->fetch( 'cmap' );
 		}
+		return '';
 	}
 
 	/**
 	 * getLinkStructure
 	 *
-	 * @param array $pPageName
-	 * @param float $pLevel
+	 * @param string $pPageName
+	 * @param int $pLevel
 	 * @access public
-	 * @return boolean TRUE on success, FALSE on failure - $this->mErrors will contain reason for failure
+	 * @return array of links
 	 */
-	function getLinkStructure( $pPageName, $pLevel = 0 ) {
+	public function getLinkStructure( $pPageName, $pLevel = 0 ) {
 		$query = "
 			SELECT lc2.`title`
 			FROM `".BIT_DB_PREFIX."liberty_content_links` lcl
 			INNER JOIN liberty_content lc1 ON( lc1.`content_id` = lcl.`from_content_id` AND lc1.`content_status_id` > 49 )
 			INNER JOIN liberty_content lc2 ON( lc2.`content_id` = lcl.`to_content_id` AND lc2.`content_status_id` > 49 )
 			WHERE lc1.`title` = ? AND lcl.`from_content_id` <> lcl.`to_content_id`";
-		$result = $this->mDb->query( $query, array( $pPageName ));
+		$result = $this->mDb->query( $query, [$pPageName]);
 
-		$ret['pages'] = array();
+		$ret['pages'] = [];
 		$ret['name']  = $pPageName;
 
 		while( $res = $result->fetchRow() ) {
-			if( !empty( $pLevel )) {
-				$ret['pages'][] = $this->getLinkStructure( $res['title'], $pLevel - 1 );
-			} else {
-				$ret['pages'][] = array(
-					'name'  => $res['title'],
-					'pages' => array(),
-				);
-			}
+			$ret['pages'][] = !empty( $pLevel ) ? $this->getLinkStructure( $res['title'], $pLevel - 1 ) : [ 'name'  => $res['title'], 'pages' => [] ];
 		}
 		return $ret;
 	}
 	// }}}
 }
-
-/* vim: :set fdm=marker : */
-?>

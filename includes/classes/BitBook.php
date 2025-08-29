@@ -24,8 +24,8 @@
 /**
  * required setup
  */
-require_once( WIKI_PKG_CLASS_PATH.'BitPage.php' );
-require_once( LIBERTY_PKG_CLASS_PATH.'LibertyStructure.php' );
+namespace Bitweaver\Wiki;
+use Bitweaver\Liberty\LibertyStructure;
 
 define('BITBOOK_CONTENT_TYPE_GUID', 'bitbook' );
 
@@ -40,7 +40,7 @@ define('BITBOOK_CONTENT_TYPE_GUID', 'bitbook' );
 class BitBook extends BitPage {
 	public $mPageId;
 	public $mPageName;
-	function __construct( $pPageId=NULL, $pContentId=NULL ) {
+	public function __construct( $pPageId=null, $pContentId=null ) {
 		parent::__construct( $pPageId, $pContentId );
 		$this->registerContentType( BITBOOK_CONTENT_TYPE_GUID, array(
 			'content_type_guid' => BITBOOK_CONTENT_TYPE_GUID,
@@ -58,14 +58,13 @@ class BitBook extends BitPage {
 		$this->mAdminContentPerm = 'p_wiki_admin_book';
 	}
 
-	function getList( &$pListHash ) {
+	public function getList( array &$pListHash ): array {
 		$struct = new LibertyStructure();
 		$pListHash['content_type_guid'] = $this->mContentTypeGuid;
 		return $struct->getList( $pListHash );
 	}
 
-	function getStats() {
-		return FALSE;
+	public function getStats(): array {
+		return [];
 	}
 }
-?>
