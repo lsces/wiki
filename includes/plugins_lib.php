@@ -27,7 +27,10 @@
     * @author Claudio Bustos
     * @version $Revision$
     */
-    class PluginsLib extends BitBase {
+
+    namespace Bitweaver\Wiki;
+
+    class PluginsLib extends \Bitweaver\BitBase {
         public $_errors;
         public $_data;
         public $_params;
@@ -35,7 +38,7 @@
         * Array of params to be expanded as arrays. Explode the string with {@link $separator}
         * @var array
         */
-        public $expanded_params = array();
+        public $expanded_params = [];
         /**
         * Separator used to explote params listed on {@link $expanded_params}
         * @var string
@@ -63,7 +66,7 @@
             if ($defaults === false) {
                 $defaults = $this->getDefaultArguments();
             }
-            $args = array();
+            $args = [];
             foreach ($defaults as $arg => $default_val) {
                 if (isset($params[$arg])) {
                     $args[$arg] = $params[$arg];
@@ -83,7 +86,7 @@
                         $args[$arg][$id]=trim($value);
                     }
                     } else {
-                    $args[$arg]=array();
+                    $args[$arg]=[];
                     }
                 }
             }
@@ -158,13 +161,13 @@
     class PluginsLibUtil {
         /**
         * Create a table with information from pages
-        * @param array key ["data"] from one of the functions that retrieve información about pages
+        * @param array key ["data"] from one of the functions that retrieve informaciï¿½n about pages
         * @param array list of keys to show.
         * @param array definition of the principal field. By default:
         *              array("field"=>"title","name"=>"Page")
         * @return string
         */
-        function createTable($aData,$aInfo=false,$aPrincipalField=false) {
+        public function createTable($aData,$aInfo=false,$aPrincipalField=false) {
             // contract
             if (!$aPrincipalField or !is_array($aPrincipalField)) {
                 $aPrincipalField=array("field"=>"title","name"=>"Page");
@@ -205,4 +208,3 @@
         return $sOutput;
         }
     }
-?>

@@ -12,27 +12,27 @@
 /**
  * required setup
  */
-require_once( KERNEL_PKG_CLASS_PATH.'BitBase.php' );
-require_once( WIKI_PKG_CLASS_PATH.'BitPage.php' );
+namespace Bitweaver\Wiki;
+
 /**
  * @package wiki
  * @subpackage ExportLib
  */
-class ExportLib extends BitBase {
+class ExportLib extends \Bitweaver\BitBase {
 
 	function MakeWikiZip( $pExportFile ) {
 		global $gBitUser,$gBitSystem;
-		include_once (UTIL_PKG_INCLUDE_PATH."tar.class.php");
+		include_once UTIL_PKG_INCLUDE_PATH."tar.class.php";
 		$tar = new tar();
 		$query = "SELECT wp.`page_id` from `".BIT_DB_PREFIX."wiki_pages` wp INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (lc.`content_id` = wp.`content_id`) 
 				  ORDER BY lc.".$this->mDb->convertSortmode("title_asc");
-		$result = $this->mDb->query($query,array());
+		$result = $this->mDb->query($query,[]);
 		while ($res = $result->fetchRow()) {
 			$page_id = $res["page_id"];
 			$content = $this->export_wiki_page($page_id, 0);
 			$tar->addData($page_id, $content, $gBitSystem->getUTCTime());
 		}
-		$tar->toTar( $pExportFile, FALSE); 
+		$tar->toTar( $pExportFile, false); 
 		return '';
 	}
 
@@ -45,7 +45,7 @@ class ExportLib extends BitBase {
 		$gWikiPage = new BitPage( $page_id );
 		$gWikiPage->load();
 		$info = $gWikiPage->mInfo;
-		$parts = array();
+		$parts = [];
 		$parts[] = MimeifyPageRevision($info);
 		if ($nversions > 1 || $nversions == 0) {
 			foreach ($iter as $revision) {
@@ -70,7 +70,7 @@ class ExportLib extends BitBase {
 				 "INNER JOIN `".BIT_DB_PREFIX."users_users` uu ON (uu.`user_id` = th.`user_id`) " .
 				 "WHERE wp.`page_id`=? order by th.".$this->mDb->convertSortmode("version_desc");
 		$result = $this->mDb->query($query,array($page_id));
-		$ret = array();
+		$ret = [];
 		while ($res = $result->fetchRow()) {
 			array_push( $ret, $res );
 		}
@@ -78,4 +78,3 @@ class ExportLib extends BitBase {
 	}
 }
 $exportlib = new ExportLib();
-?>

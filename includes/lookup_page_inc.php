@@ -13,10 +13,10 @@
 /**
  * required setup
  */
-require_once( WIKI_PKG_CLASS_PATH.'BitBook.php');
-
+namespace Bitweaver\Wiki;
+use Bitweaver\Liberty\LibertyStructure;
 global $gContent;
-include_once( LIBERTY_PKG_INCLUDE_PATH.'lookup_content_inc.php' );
+include_once LIBERTY_PKG_INCLUDE_PATH.'lookup_content_inc.php';
 
 // this is needed when the center module is applied to avoid abusing $_REQUEST
 if( empty( $lookupHash )) {
@@ -46,7 +46,7 @@ if( empty( $gContent ) || !is_object( $gContent ) || strtolower( get_class( $gCo
 					// Display page so user can select which wiki page they want (there are multiple that share this name)
 					$gBitSmarty->assign( 'choose', $lookupHash['page'] );
 					$gBitSmarty->assign('dupePages', $existsInfo);
-					$gBitSystem->display('bitpackage:wiki/page_select.tpl', NULL, array( 'display_mode' => 'display' ));
+					$gBitSystem->display('bitpackage:wiki/page_select.tpl', null, [ 'display_mode' => 'display' ]);
 					die;
 				} else {
 					$loadPageId = $existsInfo[0]['page_id'];
@@ -70,11 +70,8 @@ if( empty( $gContent ) || !is_object( $gContent ) || strtolower( get_class( $gCo
 // we weren't passed a structure, but maybe this page belongs to one. let's check...
 if( $gContent->isValid() && empty( $gStructure ) ) {
 	//Get the structures this page is a member of
-	if( !empty($lookupHash['structure']) ) {
-		$structure=$lookupHash['structure'];
-	} else {
-		$structure='';
-	}
+	$structure = !empty($lookupHash['structure']) ? $structure=$lookupHash['structure'] : '';
+
 	if( $structs = $gContent->getStructures() ) {
 		$structId = $structs[0]['structure_id'];
 		if( count( $structs ) > 0 ) {
@@ -96,5 +93,4 @@ if( $gContent->isValid() && empty( $gStructure ) ) {
 }
 
 $gBitSmarty->clearAssign( 'gContent' );
-$gBitSmarty->assignByRef( 'gContent', $gContent );
-?>
+$gBitSmarty->assign( 'gContent', $gContent );

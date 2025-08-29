@@ -13,29 +13,32 @@
 /**
  * required setup
  */
-include_once( WIKI_PKG_CLASS_PATH.'BitBook.php');
+namespace Bitweaver\Wiki;
+use Bitweaver\KernelTools;
+use Bitweaver\Stickies\BitSticky;
+use Bitweaver\Liberty\LibertyContent;
 
 $gBitSystem->verifyPackage( 'wiki' );
 
 $gContent->verifyViewPermission();
 
 // Check permissions to access this page
-if( !$gContent->isValid() || !is_a( $gContent, 'BitPage' ) ) {
-	$gBitSystem->fatalError( tra( 'Page cannot be found' ), NULL, NULL, HttpStatusCodes::HTTP_GONE );
+if( !$gContent->isValid() || !is_a( $gContent, '\Bitweaver\Wiki\BitPage' ) ) {
+	$gBitSystem->fatalError( KernelTools::tra( 'Page cannot be found' ), null, null, \Bitweaver\HttpStatusCodes::HTTP_GONE );
 }
 
-$displayHash = array( 'perm_name' => 'p_wiki_view_page' );
+$displayHash = [ 'perm_name' => 'p_wiki_view_page' ];
 $gContent->invokeServices( 'content_display_function', $displayHash );
 
 // Let creator set permissions
 // does this work with setPreference()??? - xing - Tuesday Oct 07, 2008   17:51:38 CEST
 if( $gBitSystem->isFeatureActive( 'wiki_creator_admin' ) && $gContent->isOwner() ) {
-	$gBitUser->setPreference( 'p_wiki_admin', TRUE );
+	$gBitUser->setPreference( 'p_wiki_admin', true );
 }
 
 // doesn't seem to be used - xing - Tuesday Oct 07, 2008   17:52:42 CEST
 //if( isset( $_REQUEST["copyrightpage"] )) {
-//	$gBitSmarty->assignByRef( 'copyrightpage', $_REQUEST["copyrightpage"] );
+//	$gBitSmarty->assign( 'copyrightpage', $_REQUEST["copyrightpage"] );
 //}
 
 // Get the backlinks for the page "page"
@@ -49,7 +52,7 @@ $gContent->addHit();
 // Check if we have to lock / unlock this page
 if( !empty( $_REQUEST["action"] ) && ( $_REQUEST["action"] == 'lock' || $_REQUEST["action"] == 'unlock' )
 	&& ( $gContent->hasAdminPermission() || ($gContent->hasUserPermission( 'p_wiki_lock_page' ) && $gBitSystem->isFeatureActive( 'wiki_usrlock' )) ) ) {
-	$gContent->setLock( $_REQUEST["action"] == 'lock' ? 'L' : NULL );
+	$gContent->setLock( $_REQUEST["action"] == 'lock' ? 'L' : null );
 }
 
 // Process an undo here
@@ -60,7 +63,7 @@ if( !empty( $_REQUEST["undo"] ) && !$gContent->isLocked() && ( $gContent->hasUpd
 
 // work out if this page has slides
 if( $gBitSystem->isFeatureActive( 'wiki_uses_slides' )) {
-	$slides = explode( "-=[^=]+=-", $gContent->mInfo["data"] );
+	$slides = mb_split( "-=[^=]+=-", $gContent->mInfo["data"] );
 	if( count( $slides ) <= 1 ) {
 		$slides = explode( defined( 'PAGE_SEP' ) ? PAGE_SEP : "...page...", $gContent->mInfo["data"] );
 	}
@@ -96,7 +99,7 @@ if( $pages > 1 ) {
 
 // Comments engine!
 if( $gBitSystem->isFeatureActive( 'wiki_comments' )) {
-	$comments_vars = array( 'page' );
+	$comments_vars = [ 'page' ];
 	$comments_prefix_var = 'wiki page:';
 	$comments_object_var = 'page';
 	$commentsParentId = $gContent->mContentId;
@@ -110,7 +113,7 @@ if( $gBitSystem->isFeatureActive( 'wiki_comments' )) {
 			$comments_return_url .= '&amp;comments_maxComments=1';
 		}
 	}
-	include_once( LIBERTY_PKG_INCLUDE_PATH.'comments_inc.php' );
+	include_once LIBERTY_PKG_INCLUDE_PATH.'comments_inc.php';
 }
 
 // Footnotes
@@ -122,7 +125,7 @@ if( $gBitSystem->isFeatureActive( 'wiki_footnotes' ) && $gBitUser->isValid() ) {
 
 // Copyrights
 if( $gBitSystem->isFeatureActive( 'wiki_copyrights' ) ) {
-	require_once( WIKI_PKG_INCLUDE_PATH.'copyrights_lib.php' );
+	require_once WIKI_PKG_INCLUDE_PATH.'copyrights_lib.php';
 	$copyrights = $copyrightslib->list_copyrights( $gContent->mPageId );
 	$gBitSmarty->assign('pageCopyrights', $copyrights["data"]);
 }
@@ -137,7 +140,7 @@ if( $gBitSystem->isFeatureActive( 'users_watches' ) ) {
 				$gBitUser->expungeWatch( $_REQUEST['watch_event'], $_REQUEST['watch_object'] );
 			}
 		} else {
-			$gBitSystem->fatalError( tra( "This feature requires a registered user. ").": users_watches" );
+			$gBitSystem->fatalError( KernelTools::tra( "This feature requires a registered user. ").": users_watches" );
 		}
 	}
 
@@ -147,17 +150,18 @@ if( $gBitSystem->isFeatureActive( 'users_watches' ) ) {
 }
 
 if( $gContent->isValid() && $gBitSystem->isPackageActive( 'stickies' ) ) {
-	require_once( STICKIES_PKG_CLASS_PATH.'BitSticky.php' );
 	global $gNote;
-	$gNote = new BitSticky( NULL, NULL, $gContent->mContentId );
+	$gNote = new BitSticky();
+	$gNote->mNotatedContentId = $gContent->mContentId;
 	$gNote->load();
-	$gBitSmarty->assignByRef( 'stickyInfo', $gNote->mInfo );
+	$gBitSmarty->assign( 'stickyInfo', $gNote->mInfo );
 }
 
-$pageInfo = $gContent->mInfo;
-$pageInfo['title'] = $gContent->getTitle();
+$gContent->mInfo = $gContent->mInfo;
+$gContent->mInfo['title'] = $gContent->getTitle();
+$gContent->mInfo['parsed_data'] ??= $gContent->mInfo['data'];
 
 // Display the Index Template
-$gBitSmarty->assignByRef( 'pageInfo', $pageInfo );
+$gBitSmarty->assign( 'pageInfo', $gContent->mInfo );
 
-$gBitSystem->display( 'bitpackage:wiki/show_page.tpl', $pageInfo['title'], array( 'display_mode' => 'display' ));
+$gBitSystem->display( 'bitpackage:wiki/show_page.tpl', $gContent->mInfo['title'], [ 'display_mode' => 'display' ]);
