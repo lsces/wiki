@@ -7,16 +7,17 @@
 /**
  * definitions
  */
+namespace Bitweaver\Liberty;
 global $gBitSystem, $gLibertySystem;
 
 // only include this plugin if wiki is active and we have GraphViz
-if( @include_once( 'Image/GraphViz.php' )) {
+if( @include_once 'Image/GraphViz.php' ) {
 
 define( 'PLUGIN_GUID_DATAWIKIGRAPH', 'datawikigraph' );
-$pluginParams = array (
+$pluginParams = [
 	'tag'           => 'wikigraph',
-	'auto_activate' => FALSE,
-	'requires_pair' => TRUE,
+	'auto_activate' => false,
+	'requires_pair' => true,
 	'load_function' => 'data_wikigraph',
 	'title'         => 'WikiGraph',
 	'help_page'     => 'DataPluginWikiGraph',
@@ -24,7 +25,7 @@ $pluginParams = array (
 	'help_function' => 'data_wikigraph_help',
 	'syntax'        => "{wikigraph level= title= }".tra( "Wiki page name" )."{/wikigraph}",
 	'plugin_type'   => DATA_PLUGIN
-);
+];
 $gLibertySystem->registerPlugin( PLUGIN_GUID_DATAWIKIGRAPH, $pluginParams );
 $gLibertySystem->registerDataTag( $pluginParams['tag'], PLUGIN_GUID_DATAWIKIGRAPH );
 
@@ -78,7 +79,7 @@ function data_wikigraph( $pData, $pParams ) {
 	if( !empty( $gContent ) && is_object( $gContent )) {
 		$querystring = "";
 
-		$title = ( !empty( $pParams['title'] ) ? $pParams['title'] : 'Wiki-Graph' );
+		$title = !empty( $pParams['title'] ) ? $pParams['title'] : 'Wiki-Graph';
 		unset( $pParams['title'] );
 
 		foreach( $pParams as $param => $value ) {
@@ -86,7 +87,7 @@ function data_wikigraph( $pData, $pParams ) {
 		}
 
 		if( empty( $pData ) ) {
-			$pData = (( is_object( $gContent ) || !empty( $gContent->mPageName )) ? $gContent->mPageName : NULL );
+			$pData = ( is_object( $gContent ) || !empty( $gContent->mPageName )) ? $gContent->mPageName : null;
 		}
 
 		if( !empty( $pData ) ) {
@@ -97,7 +98,7 @@ function data_wikigraph( $pData, $pParams ) {
 			);
 
 			$mapname = md5( microtime() );
-			$mapdata = $gContent->linkStructureMap( $pData, ( isset( $pParams['level'] ) ? $pParams['level'] : 0 ), $params );
+			$mapdata = $gContent->linkStructureMap( $pData, isset( $pParams['level'] ) ? $pParams['level'] : 0, $params );
 
 			$ret = "
 				<div style='text-align:center'>
@@ -111,4 +112,3 @@ function data_wikigraph( $pData, $pParams ) {
 }
 
 } // graphviz check
-?>
