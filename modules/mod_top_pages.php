@@ -1,4 +1,6 @@
 <?php
+use Bitweaver\Wiki\BitPage;
+
 /**
  * Copyright (c) 2004 bitweaver.org
  * Copyright (c) 2003 tikwiki.org
@@ -13,7 +15,6 @@
 /**
  * required setup
  */
-require_once( WIKI_PKG_CLASS_PATH.'BitPage.php' );
 global $gQueryUser, $module_rows, $module_params;
 
 extract( $moduleParams );
@@ -23,9 +24,9 @@ if( $gBitUser->hasPermission( 'p_wiki_view_page' ) ) {
 	$listHash = array(
 		'max_records' => $module_rows,
 		'sort_mode' => 'hits_desc',
-		'user_id' => !empty( $module_params['user_pages'] ) ? $gQueryUser->mUserId : NULL,
+		'user_id' => !empty( $module_params['user_pages'] ) ? $gQueryUser->mUserId : null,
 	);
 	$modRank = $modWiki->getList( $listHash );
-	$_template->tpl_vars['modTopPages'] = new Smarty_variable( $modRank );
+	$gBitSmarty->assign( 'modTopPages', $modRank );
 }
 ?>

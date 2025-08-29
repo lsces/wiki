@@ -1,4 +1,6 @@
 <?php
+use Bitweaver\Wiki\BitPage;
+
 /**
  * Copyright (c) 2004 bitweaver.org
  * Copyright (c) 2003 tikwiki.org
@@ -16,20 +18,19 @@ global $gQueryUserId, $moduleParams;
  */
  
 if( $gBitUser->hasPermission( 'p_wiki_view_page' ) ) {
-	require_once( WIKI_PKG_CLASS_PATH.'BitPage.php' );
 	$wp = new BitPage();
 
-	$listHash = array(
+	$listHash = [
 		'sort_mode' => 'last_modified_desc',
-		'user_id' => $gQueryUserId,
-	);
-	if( !empty( $moduleParams['module_rows'] ) ) {
+		'user_id'   => $gQueryUserId,
+	];
+	if( is_array( $moduleParams ) && !empty( $moduleParams['module_rows'] ) ) {
 		$listHash['max_records'] = $moduleParams['module_rows'];
 	}
 	$modLastModif = $wp->getList( $listHash );
 
-	$_template->tpl_vars['modLastModif'] = new Smarty_variable( $modLastModif );
-	if( !empty( $moduleParams['module_params']["maxlen"] ) ) {
-		$_template->tpl_vars['maxlen'] = new Smarty_variable( isset( $moduleParams['module_params']["maxlen"] ) );
+	$gBitSmarty->assign( 'modLastModif', $modLastModif );
+	if( is_array( $moduleParams ) && !empty( $moduleParams['module_params']["maxlen"] ) ) {
+		$gBitSmarty->assign( 'maxlen', isset( $moduleParams['module_params']["maxlen"] ) );
 	}
 }

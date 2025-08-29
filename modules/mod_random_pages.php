@@ -1,4 +1,6 @@
 <?php
+use Bitweaver\Wiki\BitPage;
+
 /**
  * Copyright (c) 2004 bitweaver.org
  * Copyright (c) 2003 tikwiki.org
@@ -13,15 +15,14 @@
 /**
  * Required files
  */
-require_once( WIKI_PKG_CLASS_PATH.'BitPage.php' );
+ global $moduleParams;
 $wp = new BitPage();
 
 if( $gBitUser->hasPermission( 'p_wiki_view_page' ) ) {
-	$listHash = array(
-		'sort_mode' => 'random',
+	$listHash = [
+		'sort_mode'   => 'random',
 		'max_records' => $moduleParams['module_rows'],
-	);
+	];
 	$pages = $wp->getList( $listHash );
-	$_template->tpl_vars['modRandomPages'] = new Smarty_variable( $pages );
+	$gBitSmarty->assign( 'modRandomPages', $pages );
 }
-?>

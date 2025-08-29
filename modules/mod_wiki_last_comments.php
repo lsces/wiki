@@ -13,16 +13,16 @@
 /**
  * Show last comments on wiki pages
  */
+use Bitweaver\Liberty\LibertyComment;
+
 global $gQueryUserId, $moduleParams;
 /**
  * required setup
  */
 if( $gBitUser->hasPermission( 'p_wiki_view_page' ) ) {
-	require_once( LIBERTY_PKG_CLASS_PATH.'LibertyComment.php' );
 	$cmt = new LibertyComment();
-	$listHash = array( 'max_records' => $moduleParams['module_rows'], 'user_id' => $gQueryUserId, 'content_type_guid' => BITPAGE_CONTENT_TYPE_GUID );
+	$listHash = [ 'max_records' => $moduleParams['module_rows'], 'user_id' => $gQueryUserId, 'content_type_guid' => BITPAGE_CONTENT_TYPE_GUID ];
 	$lastComments = $cmt->getList( $listHash );
-	$_template->tpl_vars['lastComments'] = new Smarty_variable( $lastComments);
-	$_template->tpl_vars['moretooltips'] = new Smarty_variable( isset($module_params["moretooltips"]) ? $module_params["moretooltips"] : 'n');
+	$gBitSmarty->assign( 'lastComments', $lastComments);
+	$gBitSmarty->assign( 'moretooltips', isset($module_params["moretooltips"]) ? $module_params["moretooltips"] : 'n');
 }
-?>
