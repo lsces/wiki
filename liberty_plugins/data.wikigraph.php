@@ -8,6 +8,8 @@
  * definitions
  */
 namespace Bitweaver\Liberty;
+
+use Bitweaver\KernelTools;
 global $gBitSystem, $gLibertySystem;
 
 // only include this plugin if wiki is active and we have GraphViz
@@ -21,9 +23,9 @@ $pluginParams = [
 	'load_function' => 'data_wikigraph',
 	'title'         => 'WikiGraph',
 	'help_page'     => 'DataPluginWikiGraph',
-	'description'   => tra( "Inserts a graph for visual navigation. The graph shows the page and every page that can be reached from that page. It requies the Image_GraphViz pear plugin and graphviz to be installed: <strong>pear install Image_GraphViz</strong>" ),
+	'description'   => KernelTools::tra( "Inserts a graph for visual navigation. The graph shows the page and every page that can be reached from that page. It requies the Image_GraphViz pear plugin and graphviz to be installed: <strong>pear install Image_GraphViz</strong>" ),
 	'help_function' => 'data_wikigraph_help',
-	'syntax'        => "{wikigraph level= title= }".tra( "Wiki page name" )."{/wikigraph}",
+	'syntax'        => "{wikigraph level= title= }".KernelTools::tra( "Wiki page name" )."{/wikigraph}",
 	'plugin_type'   => DATA_PLUGIN
 ];
 $gLibertySystem->registerPlugin( PLUGIN_GUID_DATAWIKIGRAPH, $pluginParams );
@@ -33,37 +35,37 @@ function data_wikigraph_help() {
 	$help =
 		'<table class="data help">'
 			.'<tr>'
-				.'<th>'.tra( "Key" ).'</th>'
-				.'<th>'.tra( "Type" ).'</th>'
-				.'<th>'.tra( "Comments" ).'</th>'
+				.'<th>'.KernelTools::tra( "Key" ).'</th>'
+				.'<th>'.KernelTools::tra( "Type" ).'</th>'
+				.'<th>'.KernelTools::tra( "Comments" ).'</th>'
 			.'</tr>'
 			.'<tr class="odd">'
 				.'<td>level</td>'
-				.'<td>'.tra( "numeric").'<br />'.tra( "(optional)" ).'</td>'
-				.'<td>'.tra( "The number of levels that will be followed from the starting page." ).' '.tra( "Default").': 0</td>'
+				.'<td>'.KernelTools::tra( "numeric").'<br />'.KernelTools::tra( "(optional)" ).'</td>'
+				.'<td>'.KernelTools::tra( "The number of levels that will be followed from the starting page." ).' '.KernelTools::tra( "Default").': 0</td>'
 			.'</tr>'
 			.'<tr class="even">'
 				.'<td>title</td>'
-				.'<td>'.tra( "string").'<br />'.tra( "(optional)" ).'</td>'
-				.'<td>'.tra( "Title of the graph.").' '.tra( "Default ").': Wiki-Graph</td>'
+				.'<td>'.KernelTools::tra( "string").'<br />'.KernelTools::tra( "(optional)" ).'</td>'
+				.'<td>'.KernelTools::tra( "Title of the graph.").' '.KernelTools::tra( "Default ").': Wiki-Graph</td>'
 			.'</tr>'
 			.'<tr class="odd">'
 				.'<td>nodesep</td>'
-				.'<td>'.tra( "numeric").'<br />'.tra( "(optional)" ).'</td>'
-				.'<td>'.tra( "Distance between nodes in inches.").' '.tra( "Default").': 1.2</td>'
+				.'<td>'.KernelTools::tra( "numeric").'<br />'.KernelTools::tra( "(optional)" ).'</td>'
+				.'<td>'.KernelTools::tra( "Distance between nodes in inches.").' '.KernelTools::tra( "Default").': 1.2</td>'
 			.'</tr>'
 			.'<tr class="even">'
 				.'<td>rankdir</td>'
-				.'<td>'.tra( "string").'<br />'.tra( "(optional)" ).'</td>'
-				.'<td>'.tra( "Direction of graph layout - can be Left to Right (LR), Right to Left (RL), Top to Bottom (TB), Bottom to Top (BT).").' '.tra( "Default").': TB</td>'
+				.'<td>'.KernelTools::tra( "string").'<br />'.KernelTools::tra( "(optional)" ).'</td>'
+				.'<td>'.KernelTools::tra( "Direction of graph layout - can be Left to Right (LR), Right to Left (RL), Top to Bottom (TB), Bottom to Top (BT).").' '.KernelTools::tra( "Default").': TB</td>'
 			.'</tr>'
 			.'<tr class="odd">'
 				.'<td>bgcolor</td>'
-				.'<td>'.tra( "html colour").'<br />'.tra( "(optional)" ).'</td>'
-				.'<td>'.tra( "Background colour of the graph.").' '.tra( "Default").': transparent</td>'
+				.'<td>'.KernelTools::tra( "html colour").'<br />'.KernelTools::tra( "(optional)" ).'</td>'
+				.'<td>'.KernelTools::tra( "Background colour of the graph.").' '.KernelTools::tra( "Default").': KernelTools::transparent</td>'
 			.'</tr>'
 			.'</table>'
-		.tra( "Example: " )."{wikigraph level=1}Welcome{/wikigraph}";
+		.KernelTools::tra( "Example: " )."{wikigraph level=1}Welcome{/wikigraph}";
 	return $help;
 }
 
@@ -72,9 +74,9 @@ function data_wikigraph( $pData, $pParams ) {
 	$ret = " ";
 
 	// check to see if we have pear available.
-	if( $error = pear_check( "Image/GraphViz.php" )) {
-		return $error;
-	}
+//	if( $error = pear_check( "Image/GraphViz.php" )) {
+//		return $error;
+//	}
 
 	if( !empty( $gContent ) && is_object( $gContent )) {
 		$querystring = "";
