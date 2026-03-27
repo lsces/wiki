@@ -29,7 +29,8 @@
     */
 
     namespace Bitweaver\Wiki;
-
+	use Bitweaver\KernelTools;
+	
     class PluginsLib extends \Bitweaver\BitBase {
         public $_errors;
         public $_data;
@@ -115,7 +116,7 @@
         * @return string
         */
         function getVersion() {
-            return tra("No version indicated");
+            return KernelTools::tra("No version indicated");
             //return preg_replace("/[Revision: $]/", '',
             //                    "\$Revision$");
         }
@@ -140,7 +141,7 @@
             return $this->error("PluginsLib::run: pure virtual function. Don't be so lazy!");
         }
         function error ($message) {
-            return "~np~<span class='warn'>Plugin ".$this->getName()." ".tra("failed")." : ".tra($message)."</span>~/np~";
+            return "~np~<span class='warn'>Plugin ".$this->getName()." ".KernelTools::tra("failed")." : ".tra($message)."</span>~/np~";
         }
         function getErrorDetail() {
             return $this->_errors;
@@ -181,9 +182,9 @@
                 $iNumCol=count($aInfo)+1;
                 $sStyle=" style='width:".(floor(100/$iNumCol))."%' ";
                 // Header for info
-                $sOutput  .= "<table class='normal'><tr><td class='heading' $sStyle>".tra($aPrincipalField["name"])."</td>";
+                $sOutput  .= "<table class='normal'><tr><td class='heading' $sStyle>".KernelTools::tra($aPrincipalField["name"])."</td>";
                 foreach($aInfo as $iInfo => $sHeader) {
-                    $sOutput  .= "<td class='heading' $sStyle >".tra($sHeader)."</td>";
+                    $sOutput  .= "<td class='heading' $sStyle >".KernelTools::tra($sHeader)."</td>";
                 }
                 $sOutput  .= "</tr>";
             }

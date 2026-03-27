@@ -15,6 +15,7 @@
  */
 require_once '../kernel/includes/setup_inc.php';
 use \Bitweaver\BitBase;
+use \Bitweaver\KernelTools;
 use \Bitweaver\Liberty\LibertyStructure;
 use \Bitweaver\Wiki\BitBook;
 use \Bitweaver\Wiki\BitPage;
@@ -70,7 +71,7 @@ if( $gContent->isValid() ){
 
 if( isset($_REQUEST["createstructure"]) ) {
 	if ((empty($_REQUEST['name']))) {
-		$gBitSmarty->assign('msg', tra("You must specify a name."));
+		$gBitSmarty->assign('msg', KernelTools::tra"You must specify a name."));
 		$gBitSystem->display( 'error.tpl' , null, array( 'display_mode' => 'edit' ));
 		die;
 	}
@@ -94,7 +95,7 @@ if( isset($_REQUEST["createstructure"]) ) {
 		$structure_id = $gStructure->storeNode( $structureHash );
 		//Cannot create a structure if a structure already exists
 		if (!isset($structure_id)) {
-			$gBitSmarty->assign('msg', $_REQUEST['name'] . " " . tra("page not added (Exists)"));
+			$gBitSmarty->assign('msg', $_REQUEST['name'] . " " . KernelTools::tra"page not added (Exists)"));
 			$gBitSystem->display( 'error.tpl' , null, array( 'display_mode' => 'edit' ));
 			die;
 		}

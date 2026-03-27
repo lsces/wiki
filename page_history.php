@@ -55,5 +55,5 @@ $gBitSmarty->assign( 'listInfo', $history['listInfo'] );
 
 // Display the template
 $gBitSmarty->assign( 'gContent', $gContent );
-$gBitSystem->display( 'bitpackage:wiki/page_history.tpl' , null, array( 'display_mode' => 'display' ));
+$gBitSystem->display( 'bitpackage:wiki/page_history.tpl' , null, [ 'display_mode' => 'display' ]);
 

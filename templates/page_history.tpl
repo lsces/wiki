@@ -9,7 +9,7 @@
 			<h2>{tr}Version{/tr} {$version}</h2>
 		{/if}
 
-		{if $smarty.request.preview}
+		{if $smarty.request.preview ?? false}
 			{include file="bitpackage:wiki/show_page.tpl"}
 		{/if}
 
