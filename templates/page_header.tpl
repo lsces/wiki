@@ -2,7 +2,7 @@
 	{if $gBitSystem->isFeatureActive( 'wiki_page_title' )}
 		<h1>{$gContent->mInfo.title|escape}</h1>
 	{/if}
-	{if $gBitSystem->isFeatureActive( 'wiki_description' ) and $gContent->mInfo.summary}
+	{if $gBitSystem->isFeatureActive( 'wiki_description' ) && $gContent->mInfo.summary}
 		<p>{$gContent->mInfo.summary|escape}</p>
 	{/if}
 {/strip}{/capture}

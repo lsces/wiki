@@ -10,16 +10,16 @@
 	{if $gBitUser->hasPermission( 'p_wiki_create_page' )}
 		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}edit.php">{booticon iname="fa-file" iexplain="Create Page" ilocation=menu}</a></li>
 	{/if}
-	{if $gBitUser->hasPermission( 'p_wiki_list_pages' ) and $gBitSystem->isFeatureActive( 'wiki_books' )}
+	{if $gBitUser->hasPermission( 'p_wiki_list_pages' ) && $gBitSystem->isFeatureActive( 'wiki_books' )}
 		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}books.php">{booticon iname="fa-book" iexplain="`$smarty.const.WIKI_PKG_DIR|ucwords` Books" ilocation=menu}</a></li>
 	{/if}
 	{if $gBitSystem->isFeatureActive( 'wiki_books' ) && $gBitUser->hasPermission( 'p_wiki_create_book' )}
 		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}edit_book.php">{booticon iname="fa-book-open" iexplain="Create Book" ilocation=menu}</a></li>
 	{/if}
-	{if $gBitSystem->isFeatureActive( 'wiki_list_orphans' ) and $gBitUser->hasPermission( 'p_wiki_view_page' )}
+	{if $gBitSystem->isFeatureActive( 'wiki_list_orphans' ) && $gBitUser->hasPermission( 'p_wiki_view_page' )}
 		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}orphan_pages.php">{booticon iname="fa-magnifying-glass" iexplain="Orphan Pages" ilocation=menu}</a></li>
 	{/if}
-	{if $gBitSystem->isFeatureActive( 'wiki_multiprint' ) and $gBitUser->hasPermission( 'p_wiki_view_page' )}
+	{if $gBitSystem->isFeatureActive( 'wiki_multiprint' ) && $gBitUser->hasPermission( 'p_wiki_view_page' )}
 		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}print_pages.php">{booticon iname="fa-print"   iexplain="Print" ilocation=menu}</a></li>
 	{/if}
 	{if $gBitUser->hasPermission( 'p_wiki_list_pages' )}

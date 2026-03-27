@@ -70,7 +70,7 @@
 							{/if}
 							{formlabel label="$conDescr Title"}
 							{forminput}
-								{if $gBitUser->hasPermission( 'p_wiki_rename_page' ) or !$gContent->mInfo.page_id}
+								{if $gBitUser->hasPermission( 'p_wiki_rename_page' ) || !$gContent->mInfo.page_id}
 									<input type="text" class="form-control" maxlength="200" name="title" id="title" value="{$gContent->mInfo.title|default:$pageInfo.title|escape}" />
 								{else}
 									{$page} {$gContent->mInfo.title|default:''|escape}
@@ -139,7 +139,7 @@
 
 				{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_tab_tpl"}
 
-				{if $gBitSystem->isFeatureActive( 'wiki_attachments' ) and $gBitUser->hasPermission('p_liberty_attach_attachments')}
+				{if $gBitSystem->isFeatureActive( 'wiki_attachments' ) && $gBitUser->hasPermission('p_liberty_attach_attachments')}
 					{jstab title="Attachments"}
 						{legend legend="Attachments"}
 							{include file="bitpackage:liberty/edit_storage.tpl"}

@@ -1,6 +1,6 @@
 {if empty($comments_at_top_of_page)}{assign var=comments_at_top_of_page value=false}{/if}
 {if empty($print_page)}{assign var=print_page value=false}{/if}
-{if $comments_at_top_of_page and !$print_page and $gBitSystem->isFeatureActive( 'wiki_comments' )}
+{if $comments_at_top_of_page && !$print_page && $gBitSystem->isFeatureActive( 'wiki_comments' )}
 	{include file="bitpackage:wiki/page_header.tpl"}
 	{include file="bitpackage:liberty/comments.tpl"}
 {/if}
@@ -19,7 +19,7 @@
 
 	{include file="bitpackage:wiki/page_display.tpl"}
 
-	{if !empty($pages) and $pages > 1}
+	{if !empty($pages) && $pages > 1}
 		<div class="pagination">
 			{*<a title="{tr}First page{/tr}" href="index.php?page_id={$gContent->mInfo.page_id}&amp;pagenum={$first_page}">&laquo; &laquo;</a>*}
 			<a title="{tr}Previous page{/tr}" href="index.php?page_id={$gContent->mInfo.page_id}&amp;pagenum={$prev_page}">&laquo;</a>
@@ -49,6 +49,6 @@
 
 {include file="bitpackage:liberty/services_inc.tpl" serviceLocation='view' serviceHash=$gContent->mInfo}
 
-{if !$comments_at_top_of_page and !$print_page and $gBitSystem->isFeatureActive( 'wiki_comments' )}
+{if !$comments_at_top_of_page && !$print_page && $gBitSystem->isFeatureActive( 'wiki_comments' )}
 	{include file="bitpackage:liberty/comments.tpl"}
 {/if}

@@ -3,7 +3,7 @@
 			{if !$gContent->isLocked()}
 				{assign var=format_guid value=$gContent->mInfo.format_guid}
 				{if $gLibertySystem->mPlugins.$format_guid.is_active eq 'y'}
-				{if $gContent->hasUpdatePermission() or $page eq 'SandBox'}
+				{if $gContent->hasUpdatePermission() || $page eq 'SandBox'}
 						<li><a href="{$smarty.const.WIKI_PKG_URL}edit.php?page_id={$gContent->mInfo.page_id}">{tr}Edit{/tr}</a></li>
 					{/if}
 				{/if}
@@ -12,7 +12,7 @@
 				{/if}
 			{/if}
 			{if $page ne 'SandBox'}
-				{if $gBitUser->hasPermission( 'p_wiki_admin' ) or ($gBitUser->mUserId and ($gBitUser->mUserId eq $gContent->mInfo.modifier_user_id) and ($gBitUser->hasPermission( 'p_wiki_lock_page' )) and ($gBitSystem->isFeatureActive( 'wiki_usrlock' )))}
+				{if $gBitUser->hasPermission( 'p_wiki_admin' ) || ($gBitUser->mUserId && ($gBitUser->mUserId eq $gContent->mInfo.modifier_user_id) && ($gBitUser->hasPermission( 'p_wiki_lock_page' )) && ($gBitSystem->isFeatureActive( 'wiki_usrlock' )))}
 					{if $gContent->isLocked()}
 						<li><a href="{$smarty.const.WIKI_PKG_URL}index.php?page_id={$gContent->mInfo.page_id}&amp;action=unlock">{tr}Unlock{/tr}</a></li>
 					{else}
@@ -22,14 +22,14 @@
 				{if $gBitUser->hasPermission( 'p_wiki_admin' )}
 					<li><a href="{$smarty.const.WIKI_PKG_URL}page_permissions.php?page_id={$gContent->mInfo.page_id}">{tr}Permissions{/tr}</a></li>
 				{/if}
-				{if $gBitSystem->isFeatureActive( 'wiki_history' ) and $gContent->hasUserPermission('p_wiki_view_history')}
+				{if $gBitSystem->isFeatureActive( 'wiki_history' ) && $gContent->hasUserPermission('p_wiki_view_history')}
 					<li><a href="{$smarty.const.WIKI_PKG_URL}page_history.php?page_id={$gContent->mInfo.page_id}" rel="nofollow">{tr}History{/tr}</a></li>
 				{/if}
 			{/if}
 			{if $gBitSystem->isFeatureActive( 'wiki_like_pages' )}
 				<li><a href="{$smarty.const.WIKI_PKG_URL}like_pages.php?page_id={$gContent->mInfo.page_id}">{tr}Similar{/tr}</a></li>
 			{/if}
-			{if $gBitSystem->isFeatureActive( 'wiki_undo' ) and !$gContent->isLocked() and $gContent->hasUserPermission('p_wiki_rollback')}
+			{if $gBitSystem->isFeatureActive( 'wiki_undo' ) && !$gContent->isLocked() && $gContent->hasUserPermission('p_wiki_rollback')}
 				<li><a href="{$smarty.const.WIKI_PKG_URL}index.php?page_id={$gContent->mInfo.page_id}&amp;undo=1">{tr}Undo{/tr}</a></li>
 			{/if}
 			{if $gBitSystem->isFeatureActive( 'wiki_uses_slides' )}
@@ -42,7 +42,7 @@
 			{if $gBitUser->hasPermission( 'p_wiki_admin' )}
 				<li><a href="{$smarty.const.WIKI_PKG_URL}export_wiki_pages.php?page_id={$gContent->mInfo.page_id}">{tr}Export{/tr}</a></li>
 			{/if}
-			{if $gBitSystem->isFeatureActive( 'users_watches' ) and $gContent->hasUserPermission('p_users_admin')}
+			{if $gBitSystem->isFeatureActive( 'users_watches' ) && $gContent->hasUserPermission('p_users_admin')}
 				<li><a href="{$smarty.const.WIKI_PKG_URL}page_watches.php?page_id={$gContent->mInfo.page_id}">{tr}Watches{/tr}</a></li>
 			{/if}
 	{/strip}{/capture}

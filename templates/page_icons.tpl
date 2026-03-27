@@ -8,27 +8,27 @@
 		{/if}
 
 		{if $gContent->isLocked()}
-			{if $gContent->hasAdminPermission() or ($gContent->isOwner() and $gContent->hasUserPermission( 'p_wiki_lock_page' ) and $gBitSystem->isFeatureActive( 'wiki_usrlock' ))}
+			{if $gContent->hasAdminPermission() || ($gContent->isOwner() && $gContent->hasUserPermission( 'p_wiki_lock_page' ) && $gBitSystem->isFeatureActive( 'wiki_usrlock' ))}
 				<a href="{$smarty.const.WIKI_PKG_URL}index.php?page_id={$gContent->mInfo.page_id}&amp;action=unlock">{booticon iname="fa-lock" iexplain="Unlock this page"}</a>
 			{else}
 				{booticon iname="fa-lock" iexplain="Locked"}
 			{/if}
 		{else}
 			{assign var=format_guid value=$gContent->mInfo.format_guid}
-			{if $gLibertySystem->mPlugins.$format_guid.is_active eq 'y' or $gContent->hasAdminPermission()}
+			{if $gLibertySystem->mPlugins.$format_guid.is_active eq 'y' || $gContent->hasAdminPermission()}
 				{if $gContent->hasUpdatePermission()}
-					{if $gContent->hasAdminPermission() or ($gContent->isOwner() and $gContent->hasUserPermission( 'p_wiki_lock_page' ) and $gBitSystem->isFeatureActive( 'wiki_usrlock' ))}
+					{if $gContent->hasAdminPermission() || ($gContent->isOwner() && $gContent->hasUserPermission( 'p_wiki_lock_page' ) && $gBitSystem->isFeatureActive( 'wiki_usrlock' ))}
 						<a href="{$smarty.const.WIKI_PKG_URL}index.php?page_id={$gContent->mInfo.page_id}&amp;action=lock">{booticon iname="fa-unlock" iexplain="Lock this page"}</a>
 					{/if}
 					<a href="{$smarty.const.WIKI_PKG_URL}edit.php?page_id={$gContent->mInfo.page_id}">{booticon iname="fa-pen-to-square" iexplain="Edit"}</a>
 				{/if}
 			{/if}
 
-			{if $gBitSystem->isFeatureActive( 'wiki_undo' ) and $gContent->hasUserPermission('p_wiki_rollback')}
+			{if $gBitSystem->isFeatureActive( 'wiki_undo' ) && $gContent->hasUserPermission('p_wiki_rollback')}
 				<a href="{$smarty.const.WIKI_PKG_URL}index.php?page_id={$gContent->mInfo.page_id}&amp;undo=1">{booticon ipackage=icons iname="fa-undo" iexplain="Undo last edit"}</a>
 			{/if}
 
-			{if $gBitSystem->isFeatureActive( 'wiki_history' ) and $gContent->hasUserPermission('p_wiki_view_history')}
+			{if $gBitSystem->isFeatureActive( 'wiki_history' ) && $gContent->hasUserPermission('p_wiki_view_history')}
 				<a href="{$smarty.const.WIKI_PKG_URL}page_history.php?page_id={$gContent->mInfo.page_id}" rel="nofollow">{booticon iname="fa-clock" iexplain=History}</a>
 			{/if}
 		{/if}
@@ -39,7 +39,7 @@
 			<a href="{$smarty.const.WIKI_PKG_URL}edit_book.php?content_id={$gContent->mContentId}">{booticon iname="fa-gears" iexplain="Edit book"}</a>
 		{/if}
 
-		{if $gBitUser->isRegistered() and $gBitUser->mUserId && $gBitSystem->isFeatureActive( 'users_watches' ) }
+		{if $gBitUser->isRegistered() && $gBitUser->mUserId && $gBitSystem->isFeatureActive( 'users_watches' ) }
 			{if $user_watching_page eq 'y'}
 				<a title="{tr}stop monitoring this page{/tr}" href="{$smarty.const.WIKI_PKG_URL}index.php?page_id={$gContent->mInfo.page_id}&amp;watch_event=wiki_page_changed&amp;watch_object={$gContent->mInfo.page_id}&amp;watch_action=remove">{booticon iname="fa-eye-slash" iexplain="Stop monitoring"}</a>
 			{else}
@@ -47,7 +47,7 @@
 			{/if}
 		{/if}
 
-		{if $gBitSystem->isFeatureActive( 'users_watches' ) and $gContent->hasUserPermission('p_users_admin')}
+		{if $gBitSystem->isFeatureActive( 'users_watches' ) && $gContent->hasUserPermission('p_users_admin')}
 			<a href="{$smarty.const.WIKI_PKG_URL}page_watches.php?page_id={$gContent->mInfo.page_id}">{booticon iname="fa-user" iexplain="Watches"}</a>
 		{/if}
 
@@ -71,7 +71,7 @@
 			{/if}
 		{/if}
 
-		{if $gBitSystem->isFeatureActive( 'wiki_backlinks' ) and $backlinks}
+		{if $gBitSystem->isFeatureActive( 'wiki_backlinks' ) && $backlinks}
 			<div class="btn-group">
 				<button class="btn btn-xs dropdown-toggle" data-toggle="dropdown">
 				  {booticon iname="fa-link"}

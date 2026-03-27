@@ -1,5 +1,5 @@
 {strip}
-<div class="body"{if $gBitUser->getPreference( 'users_double_click' ) and $gContent->hasUpdatePermission()} ondblclick="location.href='{$smarty.const.WIKI_PKG_URL}edit.php?page_id={$gContent->mInfo.page_id}';"{/if}>
+<div class="body"{if $gBitUser->getPreference( 'users_double_click' ) && $gContent->hasUpdatePermission()} ondblclick="location.href='{$smarty.const.WIKI_PKG_URL}edit.php?page_id={$gContent->mInfo.page_id}';"{/if}>
 	<div class="content">
 		{include file="bitpackage:liberty/services_inc.tpl" serviceLocation='body' serviceHash=$gContent->mInfo}
 		{$gContent->mInfo.parsed_data|highlight}
