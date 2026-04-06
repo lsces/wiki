@@ -35,7 +35,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 				'handler_class' => 'BitPage',
 				'handler_package' => 'wiki',
 				'handler_file' => 'BitPage.php',
-				'maintainer_url' => 'http://www.bitweaver.org'
+				'maintainer_url' => 'https://www.bitweaver.org'
 			] );
 		$this->mPageId = (int)$pPageId;
 		$this->mContentId = (int)$pContentId;

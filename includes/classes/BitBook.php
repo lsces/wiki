@@ -48,7 +48,7 @@ class BitBook extends BitPage {
 			'handler_class' => 'BitBook',
 			'handler_package' => 'wiki',
 			'handler_file' => 'BitBook.php',
-			'maintainer_url' => 'http://www.bitweaver.org'
+			'maintainer_url' => 'https://www.bitweaver.org'
 		) );
 		$this->mContentTypeGuid = BITBOOK_CONTENT_TYPE_GUID;
 

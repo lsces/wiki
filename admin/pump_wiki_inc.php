@@ -23,7 +23,7 @@ $pageHash = [
 		'edit' => "Welcome to bitweaver.
 We appreciate that you are taking the time to test this unique product. bitweaver allows you to create a website exactly the way you want it to be. You can install packages as you need them, enhancing or reducing the functionality of your site. If you should have space limitations you can delete packages from your server without any consequences (as long as it\'s none of the required packages).
 
-bitweaver was built with extensibility in mind and thus we have made it \'\'easy\'\' to create new packages for developers and just plug them into the bitweaver framework. We envisage that more packages will become in the future. If you should require additional functionality, it is worth keeping your eyes on [http://www.bitweaver.org/wiki/index.php?page=bitweaverFeatures|bitweaver Features], where we will announce all new packages as they are developed and reach a stable status.
+bitweaver was built with extensibility in mind and thus we have made it \'\'easy\'\' to create new packages for developers and just plug them into the bitweaver framework. We envisage that more packages will become in the future. If you should require additional functionality, it is worth keeping your eyes on [https://www.bitweaver.org/wiki/index.php?page=bitweaverFeatures|bitweaver Features], where we will announce all new packages as they are developed and reach a stable status.
 
 ^bitweaver allows you to manage your content the way you want to.^
 
@@ -71,13 +71,13 @@ Some other packages also have plugins. These settings can usually be found in th
 		'description' => 'Help and Contact Details',
 		'edit' => 'bitweaver features an internal help system that provides help in virtually all forms and areas where you have to enter information. However, should you require more help, you can always contact us by any of the means mentioned below.
 * Since we are still working hard on improving usability and stability of bitweaver, we haven\'t had time to translate bitweaver into various languages. If you are interested in helping us translate parts of bitweaver, please feel free to contact us.
-* If you want to find out more about existing packages and how to install them, you can find information at [http://www.bitweaver.org|bitweaver].
+* If you want to find out more about existing packages and how to install them, you can find information at [https://www.bitweaver.org|bitweaver].
 * Best methods to get in contact with us
-	** IRC ([http://www.bitweaver.org/wiki/index.php?page=ConnectingToIrc|instructions] on connecting to irc)
+	** IRC ([https://www.bitweaver.org/wiki/index.php?page=ConnectingToIrc|instructions] on connecting to irc)
 	** [http://sourceforge.net/mail/?group_id=141358|Sourceforge mailing list]
 	** If you wish to report any bugs, we urge you to do this at [http://sourceforge.net/tracker/?atid=630083&group_id=101599&func=browse|Sourceforge]
-	** the [http://www.bitweaver.org/forums/viewforum.php?f=5|bitweaver Forums] might contain useful information.
-	** [http://www.bitweaver.org/|bitweaver] currently contains all the documentation we have.
+	** the [https://www.bitweaver.org/forums/viewforum.php?f=5|bitweaver Forums] might contain useful information.
+	** [https://www.bitweaver.org/|bitweaver] currently contains all the documentation we have.
 * If you think you could contribute to bitweaver in any way, please feel free to contact us. we appreciate all the help we can get.
 '],
 	[
@@ -148,7 +148,7 @@ Clicking this link will take you to a page with a massive number of options. The
 	[
 		'title' => 'bitweaver Glossary',
 		'description' => 'Definition of Frequently used Terms',
-		'edit' => ';Package:A Package is a part of bitweaver that can manipulate, store and/or display information. Packages are always self-contained entities that can be installed, or uninstalled should require additional functionality. A list of currently available packages can be found on [http://www.bitweaver.org|bitweaver]. bitweaver differentiates between internal and foreign packages. Internal packages are packages that have been created inhouse and are meant to work with bitweaver from the ground up and will probably not work with any other application. a Foreign Package is usually a standalone application that has been modified in a way to fit into bitweaver. We try and keep these modifications to a minimum, allowing for easy upgrades to new versions.
+		'edit' => ';Package:A Package is a part of bitweaver that can manipulate, store and/or display information. Packages are always self-contained entities that can be installed, or uninstalled should require additional functionality. A list of currently available packages can be found on [https://www.bitweaver.org|bitweaver]. bitweaver differentiates between internal and foreign packages. Internal packages are packages that have been created inhouse and are meant to work with bitweaver from the ground up and will probably not work with any other application. a Foreign Package is usually a standalone application that has been modified in a way to fit into bitweaver. We try and keep these modifications to a minimum, allowing for easy upgrades to new versions.
 ;Plugin:Enable or disable pluggable features. These plugins are more powerful than regular features and usually allow manipulation of content.
 ;Feature:Packages usually contain various features that can be activated or deactivated. All these features can be set from the ['.KERNEL_PKG_URL.'admin/index.php|Administration Screen]. The number of features can be daunting to begin with, but we are sure you will soon work out what they all do. most features have some short description of what you expect from the setting once turned on or off.
 ;Module:A module is one of the small boxes in one of the outer columns. You can select what modules and where you want to display these from the ['.KERNEL_PKG_URL.'admin/index.php?page=layout|Layout Screen].
