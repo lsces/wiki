@@ -50,7 +50,7 @@ if( isset( $_REQUEST["batch_submit"] ) && isset( $_REQUEST["checked"] ) && $_REQ
 		foreach( $_REQUEST["checked"] as $deletepage ) {
 			$tmpPage = new BitPage( $deletepage );
 			if( !$tmpPage->load() || !$tmpPage->expunge() ) {
-				array_merge( $errors, array_values( $tmpPage->mErrors ));
+				[ ...$errors ?? [], ...array_values( $tmpPage->mErrors )];
 			}
 		}
 		if( !empty( $errors )) {
