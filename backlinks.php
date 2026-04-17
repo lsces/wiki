@@ -31,6 +31,7 @@ if( !$gContent->pageExists( $gContent->mPageName )) {
 } else {
 	$_REQUEST["page"] = $gContent->mPageName;
 	$gBitSmarty->assign('page', $_REQUEST["page"]);
+	$gBitSmarty->assign('page_id', $_REQUEST["page_id"]);
 }
 
 // Get the backlinks for the page "page"
