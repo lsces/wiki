@@ -16,7 +16,7 @@ global $gQueryUserId, $moduleParams;
 /**
  * required setup
  */
- 
+
 if( $gBitUser->hasPermission( 'p_wiki_view_page' ) ) {
 	$wp = new BitPage();
 

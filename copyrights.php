@@ -44,7 +44,7 @@ if (isset($_REQUEST['editcopyright'])) {
 		$copyrightslib->edit_copyright($copyright_id, $copyrightTitle, $copyrightYear, $copyrightAuthors, $gBitUser->mUserId);
 	} else {
 		$gBitSmarty->assign('msg', KernelTools::tra("You must supply all the information, including title and year."));
-		$gBitSystem->display( 'error.tpl' , null, array( 'display_mode' => 'display' ));
+		$gBitSystem->display( 'error.tpl' , null, [ 'display_mode' => 'display' ]);
 		die;
 	}
 }

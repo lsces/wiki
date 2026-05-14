@@ -14,6 +14,7 @@
  * required setup
  */
 namespace Bitweaver\Wiki;
+
 use Bitweaver\Liberty\LibertyStructure;
 global $gContent;
 include_once LIBERTY_PKG_INCLUDE_PATH.'lookup_content_inc.php';
@@ -24,7 +25,7 @@ if( empty( $lookupHash )) {
 }
 
 // if we already have a gContent, we assume someone else created it for us, and has properly loaded everything up.
-if( empty( $gContent ) || !is_object( $gContent ) || strtolower( get_class( $gContent ) ) != 'bitpage' ) {
+if( empty( $gContent ) || !is_object( $gContent ) || strtolower( $gContent::class   ) != 'bitpage' ) {
 	if( !empty( $lookupHash['page_id'] ) )  {
 		$loadContentId = BitPage::findContentIdByPageId( $lookupHash['page_id'] );
 	} elseif( !empty( $lookupHash['content_id'] ) ) {
@@ -48,10 +49,10 @@ if( empty( $gContent ) || !is_object( $gContent ) || strtolower( get_class( $gCo
 					$gBitSmarty->assign('dupePages', $existsInfo);
 					$gBitSystem->display('bitpackage:wiki/page_select.tpl', null, [ 'display_mode' => 'display' ]);
 					die;
-				} else {
+				}
 					$loadPageId = $existsInfo[0]['page_id'];
 					$loadContentId = $existsInfo[0]['content_id'];
-				}
+
 			}
 		} elseif( $loadPage ) {
 			$gBitSmarty->assign('page', $loadPage);//to have the create page link in the error

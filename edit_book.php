@@ -43,7 +43,7 @@ if( BitBase::verifyId( $_REQUEST["structure_id"] ) || BitBase::verifyId( $_REQUE
 		$newStructure = new LibertyStructure();
 		// alias => '' is a temporary setting until alias stuff has been removed
 		if( !$node = $newStructure->getNode( -2, $gContent->mContentId ) ) {
-			$structureHash = array( 'content_id' => $gContent->mContentId, 'alias' => '' );
+			$structureHash = [ 'content_id' => $gContent->mContentId, 'alias' => '' ];
 			$_REQUEST["structure_id"] = $newStructure->storeNode( $structureHash );
 		} else {
 			$_REQUEST["structure_id"] = $node['structure_id'];
@@ -72,7 +72,7 @@ if( $gContent->isValid() ){
 if( isset($_REQUEST["createstructure"]) ) {
 	if ((empty($_REQUEST['name']))) {
 		$gBitSmarty->assign('msg', KernelTools::tra( "You must specify a name."));
-		$gBitSystem->display( 'error.tpl' , null, array( 'display_mode' => 'edit' ));
+		$gBitSystem->display( 'error.tpl' , null, [ 'display_mode' => 'edit' ]);
 		die;
 	}
 
@@ -91,12 +91,12 @@ if( isset($_REQUEST["createstructure"]) ) {
 	if( $gContent->isValid() ) {
 		$gStructure = new LibertyStructure();
 		// alias => '' is a temporary setting until alias stuff has been removed
-		$structureHash = array( 'content_id' => $gContent->mContentId, 'alias' => '' );
+		$structureHash = [ 'content_id' => $gContent->mContentId, 'alias' => '' ];
 		$structure_id = $gStructure->storeNode( $structureHash );
 		//Cannot create a structure if a structure already exists
 		if (!isset($structure_id)) {
 			$gBitSmarty->assign('msg', $_REQUEST['name'] . " " . KernelTools::tra( "page not added (Exists)"));
-			$gBitSystem->display( 'error.tpl' , null, array( 'display_mode' => 'edit' ));
+			$gBitSystem->display( 'error.tpl' , null, [ 'display_mode' => 'edit' ]);
 			die;
 		}
 
@@ -152,4 +152,4 @@ if( isset($_REQUEST["createstructure"]) ) {
 }
 $gBitSystem->setBrowserTitle( !empty($gStructure) && $gStructure->isValid() ? 'Edit Wiki Book:'.$gStructure->getField( 'title' ) : null );
 // Display the template
-$gBitSystem->display( $mid , null, array( 'display_mode' => 'edit' ));
+$gBitSystem->display( $mid , null, [ 'display_mode' => 'edit' ]);

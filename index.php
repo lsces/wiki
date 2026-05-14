@@ -14,6 +14,7 @@
  * required setup
  */
 namespace Bitweaver\Wiki;
+
 require_once '../kernel/includes/setup_inc.php';
 
 $gBitSystem->verifyPackage( 'wiki' );
@@ -21,7 +22,7 @@ $gBitSystem->verifyPackage( 'wiki' );
 if( !empty( $_REQUEST['structure_id'] ) ) {
 	include LIBERTY_PKG_INCLUDE_PATH.'structure_display_inc.php';
 } else {
-    // if no page set
+	// if no page set
 	if ( !isset( $_REQUEST['page'] ) and !isset( $_REQUEST['page_id'] ) ) {
 		// if auto create home page disabled just get a list
 		if( $gBitSystem->isFeatureActive( 'wiki_disable_auto_home' ) ){
@@ -39,10 +40,10 @@ if( !empty( $_REQUEST['structure_id'] ) ) {
 			'title' => $wikiHome ?? 'HomePage',
 			'creator_user_id' => ROOT_USER_ID,
 			'modifier_user_id' => ROOT_USER_ID,
-			'edit' => 'Welcome to '.( $gBitSystem->getConfig( 'site_title', 'our site' ) ) ];
+			'edit' => 'Welcome to '.( $gBitSystem->getConfig( 'site_title', 'our site' ) ), ];
 		$gHome->store( $homeHash );
 	}
-	
+
 	include WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php';
 	if( $gContent->isValid() ) {
 		$gBitSystem->setCanonicalLink( $gContent->getDisplayUrl() );

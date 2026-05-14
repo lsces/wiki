@@ -11,7 +11,7 @@ use Bitweaver\Wiki\BitPage;
  * @package wiki
  * @subpackage modules
  */
- 
+
 /**
  * Required files
  */

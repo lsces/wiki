@@ -29,11 +29,11 @@ if ($_REQUEST["extwiki_id"]) {
 }
 $gBitSmarty->assign('info', $info);
 if (isset($_REQUEST["remove"])) {
-	
+
 	$adminlib->remove_extwiki($_REQUEST["remove"]);
 }
 if (isset($_REQUEST["save"])) {
-	
+
 	$adminlib->replace_extwiki($_REQUEST["extwiki_id"], $_REQUEST["extwiki"], $_REQUEST['name']);
 	$info = [];
 	$info["extwiki"] = '';
@@ -73,4 +73,4 @@ if ($offset > 0) {
 $gBitSmarty->assign('channels', $channels["data"] );
 
 // Display the template
-$gBitSystem->display( 'bitpackage:wiki/admin_external_wikis.tpl', null, array( 'display_mode' => 'admin' ));
+$gBitSystem->display( 'bitpackage:wiki/admin_external_wikis.tpl', null, [ 'display_mode' => 'admin' ]);

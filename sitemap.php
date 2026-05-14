@@ -49,7 +49,7 @@ function process_book_list( $pList, $pDepth = 1 ) {
 			} else {
 				$freq = 'monthly';
 			}
-			
+
 			$hash['changefreq'] = $freq;
 			$hash['priority'] = 1 - round( $pDepth * .5 ) * .1;
 			$gSiteMapHash[$pList[$key]['content_id']] = $hash;

@@ -41,11 +41,11 @@ if( isset( $_REQUEST["batch_submit"] ) && isset( $_REQUEST["checked"] ) && $_REQ
 
 			$formHash['input'][] = '<input type="hidden" name="checked[]" value="'.$del.'"/>'.$info;
 		}
-		$gBitSystem->confirmDialog( $formHash, 
-				array( 
-					'warning' => KernelTools::tra('Are you sure you want to delete these pages?') . ' (' . KernelTools::tra('Count: ') . count( $_REQUEST["checked"] ) . ')',				
+		$gBitSystem->confirmDialog( $formHash,
+				[
+					'warning' => KernelTools::tra('Are you sure you want to delete these pages?') . ' (' . KernelTools::tra('Count: ') . count( $_REQUEST["checked"] ) . ')',
 					'error' => KernelTools::tra('This cannot be undone!'),
-				)
+				],
 			);
 	} else {
 		foreach( $_REQUEST["checked"] as $deletepage ) {
@@ -80,4 +80,4 @@ $gBitSmarty->assign( 'listpages', $listpages );
 $gBitSmarty->assign( 'listInfo', $listHash['listInfo'] );
 
 // Display the template
-$gBitSystem->display( 'bitpackage:wiki/orphan_pages.tpl', KernelTools::tra( 'Orphan Pages' ), array( 'display_mode' => 'list' ));
+$gBitSystem->display( 'bitpackage:wiki/orphan_pages.tpl', KernelTools::tra( 'Orphan Pages' ), [ 'display_mode' => 'list' ]);

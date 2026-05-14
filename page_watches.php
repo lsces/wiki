@@ -29,8 +29,6 @@ $gComment = new LibertyComment();
 $numComments = $gComment->getNumComments($gContent->mContentId);
 $gBitSmarty->assign('comments_count', $numComments);
 
-
-
 //vd($gContent->mPageId);vd($gContent->mInfo);
 if( !$gContent->isValid() || empty( $gContent->mInfo ) ) {
 	$gBitSystem->fatalError( KernelTools::tra( "Unknown page" ));
@@ -39,11 +37,11 @@ if( !$gContent->isValid() || empty( $gContent->mInfo ) ) {
 $watches = null;
 if( !empty( $gContent->mPageId ) ) {
 
-    $event = 'wiki_page_changed';    
-    $watches = $gBitUser->get_event_watches($event, $gContent->mPageId);
-    $gBitSmarty->assign('watches', $watches);
-    $gBitSmarty->assign( 'pageInfo', $gContent->mInfo );
-    }
+	$event = 'wiki_page_changed';
+	$watches = $gBitUser->get_event_watches($event, $gContent->mPageId);
+	$gBitSmarty->assign('watches', $watches);
+	$gBitSmarty->assign( 'pageInfo', $gContent->mInfo );
+	}
 
 // Display the template
 $gBitSystem->display( 'bitpackage:wiki/page_watches.tpl', null, [ 'display_mode' => 'display' ] );

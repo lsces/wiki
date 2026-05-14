@@ -48,7 +48,7 @@ if( !$gBitUser->hasPermission( 'p_wiki_view_page' ) ) {
 
 		$item->date = ( int )$feed['last_modified'];
 		$item->source = 'http://'.$_SERVER['HTTP_HOST'].BIT_ROOT_URL;
-		$item->author = $gBitUser->getDisplayName( false, array( 'real_name' => $feed['modifier_real_name'], 'login' => $feed['modifier_user'] ) );
+		$item->author = $gBitUser->getDisplayName( false, [ 'real_name' => $feed['modifier_real_name'], 'login' => $feed['modifier_user'] ] );
 
 		$item->descriptionTruncSize = $gBitSystem->getConfig( 'rssfeed_truncate', 5000 );
 		$item->descriptionHtmlSyndicated = false;

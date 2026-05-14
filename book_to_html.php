@@ -19,39 +19,39 @@ use Bitweaver\KernelTools;
 
 function copys($source,$dest)
 {
-    if (!is_dir($source))
-    return 0;
-    if (!is_dir($dest))
-    {
-        mkdir($dest);
-    }
-    $h=@dir($source);
-    while (@($entry=$h->read()) !== false)
-    {
-        if (($entry!=".")&&($entry!=".."))
-        {
-            if (is_dir("$source/$entry")&&$dest!=="$source/$entry")
-            {
-                copys("$source/$entry","$dest/$entry");
-            }
-            else
-            {
-                @copy("$source/$entry","$dest/$entry");
-            }
-        }
-    }
-    $h->close();
-    return 1;
+	if (!is_dir($source))
+	return 0;
+	if (!is_dir($dest))
+	{
+		mkdir($dest);
+	}
+	$h=@dir($source);
+	while (@($entry=$h->read()) !== false)
+	{
+		if (($entry!=".")&&($entry!=".."))
+		{
+			if (is_dir("$source/$entry")&&$dest!=="$source/$entry")
+			{
+				copys("$source/$entry","$dest/$entry");
+			}
+			else
+			{
+				@copy("$source/$entry","$dest/$entry");
+			}
+		}
+	}
+	$h->close();
+	return 1;
 }
 
 function deldirfiles($dir){
   $current_dir = opendir($dir);
   while($entryname = readdir($current_dir)){
-     if(is_dir("$dir/$entryname") and ($entryname != "." and $entryname!="..")){
-        deldirfiles("{$dir}/{$entryname}");
-     }elseif($entryname != "." and $entryname!=".."){
-        unlink("{$dir}/{$entryname}");
-     }
+	 if(is_dir("$dir/$entryname") and ($entryname != "." and $entryname!="..")){
+		deldirfiles("{$dir}/{$entryname}");
+	 }elseif($entryname != "." and $entryname!=".."){
+		unlink("{$dir}/{$entryname}");
+	 }
   }
   closedir($current_dir);
 }
@@ -78,15 +78,15 @@ if(isset($_REQUEST['create'])) {
   $output.="Generating WebHelp using <b>$name</b> as index. Directory: $name<br/>";
   $base = BITHELP_PKG_PATH."$dir";
   if(!is_dir(BITHELP_PKG_PATH."$dir")) {
-    $output.="Creating directory structure in $base<br/>";
-    mkdir(BITHELP_PKG_PATH."$dir");
-    mkdir("$base/js");
-    mkdir("$base/css");
-    mkdir("$base/icons");
-    mkdir("$base/menu");
-    mkdir("$base/pages");
-    mkdir("$base/pages/img");
-    mkdir("$base/pages/img/wiki_up");
+	$output.="Creating directory structure in $base<br/>";
+	mkdir(BITHELP_PKG_PATH."$dir");
+	mkdir("$base/js");
+	mkdir("$base/css");
+	mkdir("$base/icons");
+	mkdir("$base/menu");
+	mkdir("$base/pages");
+	mkdir("$base/pages/img");
+	mkdir("$base/pages/img/wiki_up");
   }
   $output.="Eliminating previous files<br/>";
   deldirfiles("$base/js");
@@ -103,4 +103,4 @@ if(isset($_REQUEST['create'])) {
 }
 
 // Display the template
-$gBitSystem->display( 'bitpackage:wiki/create_webhelp.tpl', null, array( 'display_mode' => 'display' ));
+$gBitSystem->display( 'bitpackage:wiki/create_webhelp.tpl', null, [ 'display_mode' => 'display' ]);

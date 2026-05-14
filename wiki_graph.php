@@ -14,7 +14,6 @@
  * required setup
  */
 include_once '../kernel/includes/setup_inc.php';
-use Bitweaver\Wiki\BitPage;
 include_once WIKI_PKG_INCLUDE_PATH.'lookup_page_inc.php';
 include_once UTIL_PKG_INCLUDE_PATH.'pear/Image/GraphViz.php';
 $graph = new Image_GraphViz();

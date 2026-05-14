@@ -26,7 +26,7 @@ $pluginParams = [
 	'description'   => KernelTools::tra( "Inserts a graph for visual navigation. The graph shows the page and every page that can be reached from that page. It requies the Image_GraphViz pear plugin and graphviz to be installed: <strong>pear install Image_GraphViz</strong>" ),
 	'help_function' => 'data_wikigraph_help',
 	'syntax'        => "{wikigraph level= title= }".KernelTools::tra( "Wiki page name" )."{/wikigraph}",
-	'plugin_type'   => DATA_PLUGIN
+	'plugin_type'   => DATA_PLUGIN,
 ];
 $gLibertySystem->registerPlugin( PLUGIN_GUID_DATAWIKIGRAPH, $pluginParams );
 $gLibertySystem->registerDataTag( $pluginParams['tag'], PLUGIN_GUID_DATAWIKIGRAPH );
@@ -93,14 +93,14 @@ function data_wikigraph( $pData, $pParams ) {
 		}
 
 		if( !empty( $pData ) ) {
-			$params = array(
+			$params = [
 				'graph' => $gBitThemes->getGraphvizGraphAttributes( $pParams ),
 				'node'  => $gBitThemes->getGraphvizNodeAttributes( $pParams ),
 				'edge'  => $gBitThemes->getGraphvizEdgeAttributes( $pParams ),
-			);
+			];
 
 			$mapname = md5( microtime() );
-			$mapdata = $gContent->linkStructureMap( $pData, isset( $pParams['level'] ) ? $pParams['level'] : 0, $params );
+			$mapdata = $gContent->linkStructureMap( $pData, $pParams['level'] ?? 0, $params );
 
 			$ret = "
 				<div style='text-align:center'>

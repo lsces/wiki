@@ -24,5 +24,5 @@ if( $gBitUser->hasPermission( 'p_wiki_view_page' ) ) {
 	$listHash = [ 'max_records' => $moduleParams['module_rows'], 'user_id' => $gQueryUserId, 'content_type_guid' => BITPAGE_CONTENT_TYPE_GUID ];
 	$lastComments = $cmt->getList( $listHash );
 	$gBitSmarty->assign( 'lastComments', $lastComments);
-	$gBitSmarty->assign( 'moretooltips', isset($module_params["moretooltips"]) ? $module_params["moretooltips"] : 'n');
+	$gBitSmarty->assign( 'moretooltips', $module_params["moretooltips"] ?? 'n');
 }

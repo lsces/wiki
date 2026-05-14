@@ -30,9 +30,9 @@ if( isset( $_REQUEST["confirm"] ) ) {
 	if( $gContent->expunge()  ) {
 		header( "location: ".WIKI_PKG_URL );
 		die;
-	} else {
-		$gBitSystem->fatalError( KernelTools::tra("There was an error deleting the page:") . ' ' . \Bitweaver\vc( $gContent->mErrors ));
 	}
+		$gBitSystem->fatalError( KernelTools::tra("There was an error deleting the page:") . ' ' . \Bitweaver\vc( $gContent->mErrors ));
+
 }
 
 $gBitSystem->setBrowserTitle( KernelTools::tra( 'Confirm delete of: ' ).$gContent->getTitle() );

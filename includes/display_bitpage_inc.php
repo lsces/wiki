@@ -14,6 +14,7 @@
  * required setup
  */
 namespace Bitweaver\Wiki;
+
 use Bitweaver\KernelTools;
 use Bitweaver\Stickies\BitSticky;
 use Bitweaver\Liberty\LibertyContent;

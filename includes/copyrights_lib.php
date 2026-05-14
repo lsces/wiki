@@ -14,6 +14,7 @@
  * @subpackage CopyrightsLib
  */
 namespace Bitweaver\Wiki;
+
 use Bitweaver\BitBase;
 
 class CopyrightsLib extends BitBase {

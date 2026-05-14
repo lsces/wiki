@@ -1,6 +1,5 @@
 <?php
 
-use Bitweaver\Wiki\BitPage;
 global $moduleParams, $gBitSmarty;
 
 // Load up the correct wiki page

@@ -16,7 +16,7 @@ To continue with this tutorial, it would be best if you had administrator rights
 $admin_link = 'You first have to go to the Administration panel (Administration in the top menu bar). Once there you can see a number of links organised by package:
 __Administration__ --> ';
 
-$pageHash = [ 
+$pageHash = [
 [
 		'title' => 'Welcome',
 		'description' => 'The Wiki Package of bitweaver',
@@ -32,7 +32,7 @@ bitweaver was built with extensibility in mind and thus we have made it \'\'easy
 ** ((Getting Help))
 ** ((How to create a Wiki Book))
 ** ((How to set your Wiki Homepage))
-** ((bitweaver Glossary))"
+** ((bitweaver Glossary))",
 ],
 	[
 		'title' => 'Getting Started',
@@ -65,7 +65,7 @@ To control the availability of this __code__ plugin, you can do this on the {$ad
 
 !! Other Plugins
 Some other packages also have plugins. These settings can usually be found in the respective package plugins admin page e.g.: {$admin_link}__Treasury__ --> __Treasury Plugins__.
-"],
+", ],
 	[
 		'title' => 'Getting Help',
 		'description' => 'Help and Contact Details',
@@ -79,7 +79,7 @@ Some other packages also have plugins. These settings can usually be found in th
 	** the [https://www.bitweaver.org/forums/viewforum.php?f=5|bitweaver Forums] might contain useful information.
 	** [https://www.bitweaver.org/|bitweaver] currently contains all the documentation we have.
 * If you think you could contribute to bitweaver in any way, please feel free to contact us. we appreciate all the help we can get.
-'],
+', ],
 	[
 		'title' => 'How to create a Wiki Book',
 		'description' => 'A wikibook is a handy way to organise pages.',
@@ -132,7 +132,7 @@ You can make it more apparent that the ((bitweaver Glossary)) is part of the ((G
 
 !Viewing the Wiki Book
 Now that we have created a Wiki Book, we want to view it and see what all this work was for. If you click on the __Wiki Books__ in your left menu, you will see the ===bitweaver Help=== book. Please click on the book, which will take you to a page, where you can see the Wiki Book you just created. The special aspect of these books, is the easy navigation that comes with the hierarchial structuring of the pages. Above the wiki page, you can now see links that allow you to move forwards, backwards and up one level using those simple navigational links.
-'],
+', ],
 	[
 		'title' => 'How to set your Wiki Homepage',
 		'description' => 'How to set a specific wikipage as home',
@@ -144,7 +144,7 @@ Now that we have created a Wiki Book, we want to view it and see what all this w
 '.$admin_link.'__Wiki__ --> __Wiki Settings__
 
 Clicking this link will take you to a page with a massive number of options. The one we are interested in, are all in the __Wiki Settings__ tab. The topmost setting is the one we want. The name of the page you enter here, will be the one tha is first shown when clicking on the __Wiki Home__ link in the ===Application Menu=== or the __Wiki__ link in the ===top bar menu===.
-'],
+', ],
 	[
 		'title' => 'bitweaver Glossary',
 		'description' => 'Definition of Frequently used Terms',
@@ -155,7 +155,7 @@ Clicking this link will take you to a page with a massive number of options. The
 ;Group:In bitweaver groups are given permissions. You can then assign users to various groups. this makes it easy to allow a set of users to edit wiki pages but not edit blogs or vice versa.
 ;User:When a user registers with your site, that user is added to your database. every user has a defined set of permissions that allow them to access particular parts of your site. to manage these permissions, you have to first define groups and allocate permissions to them.
 ;Content:Content is any text that is intered into bitweaver that is stored in the central liberty tables. storing the content in one place makes it accesible from various different places allowing users to mix and match such content as they see fit. This makes it possible to easily display images in a wiki text or even display a blog post in an article since they are all considered to be the same.
-'],
+', ],
 ];
 
 foreach( $pageHash as $page ) {

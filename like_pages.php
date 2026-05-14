@@ -14,6 +14,7 @@
  * required setup
  */
 namespace Bitweaver\Wiki;
+
 use Bitweaver\KernelTools;
 
 require_once '../kernel/includes/setup_inc.php';
@@ -33,4 +34,4 @@ $likepages = $gContent->getLikePages( $gContent->mInfo['title'] );
 $gBitSmarty->assign( 'likepages', $likepages );
 
 // Display the template
-$gBitSystem->display( 'bitpackage:wiki/like_pages.tpl', null, array( 'display_mode' => 'display' ));
+$gBitSystem->display( 'bitpackage:wiki/like_pages.tpl', null, [ 'display_mode' => 'display' ]);

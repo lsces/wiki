@@ -20,11 +20,11 @@
 //
 // $Id: BitBook.php,v 1.14 2010/04/17 22:46:11 wjames5 Exp $
 
-
 /**
  * required setup
  */
 namespace Bitweaver\Wiki;
+
 use Bitweaver\Liberty\LibertyStructure;
 
 define('BITBOOK_CONTENT_TYPE_GUID', 'bitbook' );
@@ -42,14 +42,14 @@ class BitBook extends BitPage {
 	public $mPageName;
 	public function __construct( $pPageId=null, $pContentId=null ) {
 		parent::__construct( $pPageId, $pContentId );
-		$this->registerContentType( BITBOOK_CONTENT_TYPE_GUID, array(
+		$this->registerContentType( BITBOOK_CONTENT_TYPE_GUID, [
 			'content_type_guid' => BITBOOK_CONTENT_TYPE_GUID,
 			'content_name' => 'Wiki Book',
 			'handler_class' => 'BitBook',
 			'handler_package' => 'wiki',
 			'handler_file' => 'BitBook.php',
-			'maintainer_url' => 'https://www.bitweaver.org'
-		) );
+			'maintainer_url' => 'https://www.bitweaver.org',
+		] );
 		$this->mContentTypeGuid = BITBOOK_CONTENT_TYPE_GUID;
 
 		// Permission setup

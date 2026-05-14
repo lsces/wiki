@@ -181,10 +181,10 @@ if( isset( $_REQUEST["fCancel"] ) ) {
 		header( "Location: ".$gContent->getDisplayUrlFromHash( $return ) );
 		die;
 
-	} else {
+	}
 		$formInfo = $_REQUEST;
 		$formInfo['data'] = &$_REQUEST['edit'];
-	}
+
 } elseif( !empty( $_REQUEST['edit'] ) ) {
 	// perhaps we have a javascript non-saving form submit
 	$formInfo = $_REQUEST;
@@ -213,7 +213,7 @@ if( isset( $_REQUEST["preview"] ) ) {
 
 	$formInfo['parsed_data'] = LibertyContent::parseDataHash( $data_to_parse );
 	$gContent->invokeServices( 'content_preview_function' );
-} 
+}
 $gBitSmarty->assign( 'preview',$preview );
 
 if( $gContent->isInStructure() ) {
@@ -241,13 +241,6 @@ if( $gBitSystem->isPackageActive( 'ckeditor' ) ) {
 }
 
 $gBitSystem->display( 'bitpackage:wiki/edit_page.tpl', 'Edit: '.$gContent->getTitle() , [ 'display_mode' => 'edit' ] );
-
-
-
-
-
-
-
 
 //******************* WIKI Edit Functions
 
@@ -474,7 +467,7 @@ if( isset( $_REQUEST["suck_url"] ) ) {
 	}
 	// Suck another page and append to the end of current
 	require_once UTIL_PKG_INCLUDE_PATH.'htmlparser/html_parser_inc.php';
-	$suck_url = isset( $_REQUEST["suck_url"] ) ? $_REQUEST["suck_url"] : '';
+	$suck_url = $_REQUEST["suck_url"] ?? '';
 	$parsehtml = isset( $_REQUEST["parsehtml"] ) ? ( $_REQUEST["parsehtml"] == 'on' ? 'y' : 'n' ): 'n';
 	if( isset( $_REQUEST['do_suck'] ) && strlen( $suck_url ) > 0 ) {
 		// \note by zaufi

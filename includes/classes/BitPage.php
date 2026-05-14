@@ -14,6 +14,7 @@
  * required setup
  */
 namespace Bitweaver\Wiki;
+
 use Bitweaver\BitBase;
 use Bitweaver\KernelTools;
 use Bitweaver\BitCacheable;
@@ -35,7 +36,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 				'handler_class' => 'BitPage',
 				'handler_package' => 'wiki',
 				'handler_file' => 'BitPage.php',
-				'maintainer_url' => 'https://www.bitweaver.org'
+				'maintainer_url' => 'https://www.bitweaver.org',
 			] );
 		$this->mPageId = (int)$pPageId;
 		$this->mContentId = (int)$pContentId;
@@ -470,7 +471,6 @@ class BitPage extends LibertyMime implements BitCacheable {
 		return BitPage::getPageLink( $pParamHash['title'], null );
 	}
 
-
 	/**
 	* Returns include file that will
 	* @return string the fully specified path to file to be included
@@ -478,7 +478,6 @@ class BitPage extends LibertyMime implements BitCacheable {
 	public function getRenderFile() {
 		return WIKI_PKG_INCLUDE_PATH."display_bitpage_inc.php";
 	}
-
 
 	/**
 	 * Returns the center template for the view selected
@@ -495,7 +494,6 @@ class BitPage extends LibertyMime implements BitCacheable {
 		}
 		return $ret;
 	}
-
 
 	/**
 	 * Create the generic title for a content item
@@ -600,7 +598,6 @@ class BitPage extends LibertyMime implements BitCacheable {
 		return $ret;
 	}
 
-
 	/**
 	 * Roll back to a specific version of a page
 	 * @param int $pVersion Version number to roll back to
@@ -647,7 +644,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 			'links_asc',
 			'links_desc',
 			'backlinks_asc',
-			'backlinks_desc'
+			'backlinks_desc',
 		];
 
 		if( in_array( $pListHash['sort_mode'], $specialSort ) ) {
@@ -780,8 +777,8 @@ class BitPage extends LibertyMime implements BitCacheable {
 		while( $res = $result->fetchRow() ) {
 			$aux = [];
 			$aux = $res;
-			$aux['creator'] = isset( $res['creator_real_name'] ) ? $res['creator_real_name'] : $res['creator_user'];
-			$aux['editor'] = isset( $res['modifier_real_name'] ) ? $res['modifier_real_name'] : $res['modifier_user'];
+			$aux['creator'] = $res['creator_real_name'] ?? $res['creator_user'];
+			$aux['editor'] = $res['modifier_real_name'] ?? $res['modifier_user'];
 			$aux['flag'] = $res["flag"] == 'L' ? 'locked' : 'unlocked';
 			$aux['display_url'] = static::getDisplayUrlFromHash( $aux );
 			// display_link does not seem to be used when getList is called
@@ -995,7 +992,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 			$pGraphViz->addNode( $pLinkStructure['name'], $pParams['node'] );
 
 			foreach( $pLinkStructure['pages'] as $node ) {
-			    $this->linkStructureGraph( $pGraphViz,$node, $pParams );
+				$this->linkStructureGraph( $pGraphViz,$node, $pParams );
 				$pGraphViz->addEdge( [ $pLinkStructure['name'] => $node['name'] ], $pParams['node'] );
 			}
 		}

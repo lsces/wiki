@@ -32,7 +32,7 @@ class ExportLib extends \Bitweaver\BitBase {
 			$content = $this->export_wiki_page($page_id, 0);
 			$tar->addData($page_id, $content, $gBitSystem->getUTCTime());
 		}
-		$tar->toTar( $pExportFile, false); 
+		$tar->toTar( $pExportFile, false);
 		return '';
 	}
 
@@ -69,7 +69,7 @@ class ExportLib extends \Bitweaver\BitBase {
 				 "INNER JOIN `".BIT_DB_PREFIX."liberty_content_history` th ON (th.`page_id` = th.`page_id`) " .
 				 "INNER JOIN `".BIT_DB_PREFIX."users_users` uu ON (uu.`user_id` = th.`user_id`) " .
 				 "WHERE wp.`page_id`=? order by th.".$this->mDb->convertSortmode("version_desc");
-		$result = $this->mDb->query($query,array($page_id));
+		$result = $this->mDb->query($query,[$page_id]);
 		$ret = [];
 		while ($res = $result->fetchRow()) {
 			array_push( $ret, $res );

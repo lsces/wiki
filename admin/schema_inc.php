@@ -27,7 +27,7 @@ foreach( array_keys( $tables ) AS $tableName ) {
 	$gBitInstaller->registerSchemaTable( WIKI_PKG_NAME, $tableName, $tables[$tableName] );
 }
 
-$gBitInstaller->registerPackageInfo( WIKI_PKG_NAME, [ 
+$gBitInstaller->registerPackageInfo( WIKI_PKG_NAME, [
 	'description' => "A wiki is 'the simplest online database that could possibly work.' No HTML or programming knowledge is needed to contribute to a wiki.",
 	'license' => '<a href="http://www.gnu.org/licenses/licenses.html#LGPL">LGPL</a>',
 ] );
@@ -35,16 +35,15 @@ $gBitInstaller->registerPackageInfo( WIKI_PKG_NAME, [
 // ### Indexes
 $indices = [
 	'wiki_pages_content_idx' => [  'table' => 'wiki_pages', 'cols' => 'content_id', 'opts' => 'UNIQUE' ],
-	'wiki_page_footnotes_page_idx' => [  'table' => 'wiki_footnotes', 'cols' => 'page_id', 'opts' => null ]
+	'wiki_page_footnotes_page_idx' => [  'table' => 'wiki_footnotes', 'cols' => 'page_id', 'opts' => null ],
 ];
 $gBitInstaller->registerSchemaIndexes( WIKI_PKG_NAME, $indices );
 
 // ### Sequences
 $sequences = [
-	'wiki_pages_page_id_seq' => [  'start' => 1 ]
+	'wiki_pages_page_id_seq' => [  'start' => 1 ],
 ];
 $gBitInstaller->registerSchemaSequences( WIKI_PKG_NAME, $sequences );
-
 
 // ### Default UserPermissions
 $gBitInstaller->registerUserPermissions( WIKI_PKG_NAME, [
@@ -67,7 +66,7 @@ $gBitInstaller->registerUserPermissions( WIKI_PKG_NAME, [
 ] );
 
 // ### Default Preferences
-$gBitInstaller->registerPreferences( WIKI_PKG_NAME, [ 
+$gBitInstaller->registerPreferences( WIKI_PKG_NAME, [
 	//[  WIKI_PKG_NAME, 'warn_on_edit','n' ],
 	//[  WIKI_PKG_NAME, 'wiki_allow_dup_page_names','y' ],
 	[  WIKI_PKG_NAME, 'wiki_attachments','y' ],
@@ -128,18 +127,18 @@ $gBitInstaller->registerPreferences( WIKI_PKG_NAME, [
 ] );
 
 if( defined( 'RSS_PKG_NAME' )) {
-	$gBitInstaller->registerPreferences( WIKI_PKG_NAME, [ 
+	$gBitInstaller->registerPreferences( WIKI_PKG_NAME, [
 		[  RSS_PKG_NAME, WIKI_PKG_NAME.'_rss', 'y' ],
 	] );
 }
 
 // ### Register content types
-$gBitInstaller->registerContentObjects( WIKI_PKG_NAME, [ 
+$gBitInstaller->registerContentObjects( WIKI_PKG_NAME, [
 	'BitPage' => WIKI_PKG_CLASS_PATH.'BitPage.php',
 	'BitBook' => WIKI_PKG_CLASS_PATH.'BitBook.php',
 ] );
 
 // Requirements
-$gBitInstaller->registerRequirements( WIKI_PKG_NAME, [ 
-    'liberty' => [ 'min' => '5.0.0' ],
+$gBitInstaller->registerRequirements( WIKI_PKG_NAME, [
+	'liberty' => [ 'min' => '5.0.0' ],
 ] );

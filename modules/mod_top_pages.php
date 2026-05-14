@@ -21,11 +21,11 @@ extract( $moduleParams );
 
 if( $gBitUser->hasPermission( 'p_wiki_view_page' ) ) {
 	$modWiki = new BitPage();
-	$listHash = array(
+	$listHash = [
 		'max_records' => $module_rows,
 		'sort_mode' => 'hits_desc',
 		'user_id' => !empty( $module_params['user_pages'] ) ? $gQueryUser->mUserId : null,
-	);
+	];
 	$modRank = $modWiki->getList( $listHash );
 	$gBitSmarty->assign( 'modTopPages', $modRank );
 }

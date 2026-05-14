@@ -45,4 +45,4 @@ if ($listHash['offset'] > 0) {
 
 $gBitSmarty->assign('channels', $channels["data"]);
 
-$gBitSystem->display( 'bitpackage:wiki/list_books.tpl', null, array( 'display_mode' => 'display' ));
+$gBitSystem->display( 'bitpackage:wiki/list_books.tpl', null, [ 'display_mode' => 'display' ]);

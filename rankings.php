@@ -24,15 +24,15 @@ $gBitSystem->verifyPermission( 'p_wiki_list_pages' );
 $rankingOptions = [
 	[
 		'output' => KernelTools::tra( 'Most Often Viewed' ),
-		'value' => 'hits_desc'
+		'value' => 'hits_desc',
 	],
 	[
 		'output' => KernelTools::tra( 'Most Recently Modified' ),
-		'value' => 'last_modified_desc'
+		'value' => 'last_modified_desc',
 	],
 	[
 		'output' => KernelTools::tra( 'Most Active Authors' ),
-		'value' => 'top_authors'
+		'value' => 'top_authors',
 	],
 ];
 $gBitSmarty->assign( 'rankingOptions', $rankingOptions );
@@ -67,4 +67,4 @@ if( empty( $gContent ) ) {
 $rankList = $gContent->getContentRanking( $_REQUEST );
 $gBitSmarty->assign( 'rankList', $rankList );
 
-$gBitSystem->display( 'bitpackage:liberty/rankings.tpl', KernelTools::tra( "Wiki Rankings" ) , array( 'display_mode' => 'display' ));
+$gBitSystem->display( 'bitpackage:liberty/rankings.tpl', KernelTools::tra( "Wiki Rankings" ) , [ 'display_mode' => 'display' ]);

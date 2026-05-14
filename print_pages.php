@@ -14,7 +14,6 @@
  * required setup
  */
 require_once '../kernel/includes/setup_inc.php';
-use Bitweaver\Wiki\BitPage;
 use Bitweaver\KernelTools;
 
 if( !$gBitSystem->isFeatureActive( 'wiki_multiprint' ) ) {
@@ -48,4 +47,4 @@ $pages = $gContent->getList( $listHash );
 $gBitSmarty->assign('pages', $pages);
 
 // Display the template
-$gBitSystem->display( 'bitpackage:wiki/print_pages.tpl', null, array( 'display_mode' => 'display' ));
+$gBitSystem->display( 'bitpackage:wiki/print_pages.tpl', null, [ 'display_mode' => 'display' ]);
