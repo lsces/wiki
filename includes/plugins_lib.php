@@ -142,7 +142,7 @@ use Bitweaver\KernelTools;
 			return $this->error("PluginsLib::run: pure virtual function. Don't be so lazy!");
 		}
 		function error ($message) {
-			return "~np~<span class='warn'>Plugin ".$this->getName()." ".KernelTools::tra("failed")." : ".tra($message)."</span>~/np~";
+			return "~np~<span class='warn'>Plugin ".$this->getName()." ".KernelTools::tra("failed")." : ".KernelTools::tra($message)."</span>~/np~";
 		}
 		function getErrorDetail() {
 			return $this->_errors;
