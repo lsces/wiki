@@ -166,7 +166,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 			global $gBitSystem;
 
 			$lookupColumn = BitBase::verifyId( $this->mPageId ) ? 'page_id' : 'content_id';
-			$parse = true; // ( !isset( $pPluginParams['parse'] ) or $pPluginParams['parse'] ) ? true : false;
+			$parse = $_REQUEST['parse'] ?? true;
 			$bindVars = []; $selectSql = ''; $joinSql = ''; $whereSql = '';
 			array_push( $bindVars, $lookupId = BitBase::verifyId( $this->mPageId )? $this->mPageId : $this->mContentId );
 			$this->getServicesSql( 'content_load_sql_function', $selectSql, $joinSql, $whereSql, $bindVars );
