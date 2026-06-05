@@ -38,7 +38,7 @@
 					<a href="{$smarty.const.WIKI_PKG_URL}copyrights.php?page_id={$gContent->mInfo.page_id}&amp;action=up&amp;copyright_id={$copyrights[i].copyright_id}">{biticon ipackage="icons" iname="go-up" iexplain="move up"}</a>
 					<a href="{$smarty.const.WIKI_PKG_URL}copyrights.php?page_id={$gContent->mInfo.page_id}&amp;action=down&amp;copyright_id={$copyrights[i].copyright_id}">{biticon ipackage="icons" iname="go-down" iexplain="move down"}</a>
 					<a title="{tr}Delete this copyright{/tr}" href="{$smarty.const.WIKI_PKG_URL}copyrights.php?page_id={$gContent->mInfo.page_id}&amp;action=delete&amp;copyright_id={$copyrights[i].copyright_id}" 
-						onclick="return confirm('{tr}Are you sure you want to delete this copyright?{/tr}')">{biticon ipackage="icons" iname="edit-delete" iexplain="delete"}</a>
+						onclick="return confirm('{tr}Are you sure you want to delete this copyright?{/tr}')">{biticon ipackage="icons" iname="user-trash" iexplain="delete"}</a>
 				</div>
 			{/form}
 		{/section}

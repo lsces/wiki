@@ -32,7 +32,7 @@
 					{/if}
 				{/if}
 				{if ($channels[ix].creator_user_id == $gBitUser->mUserId) || $gBitUser->hasPermission( 'p_wiki_admin_book' )}
-					<a href="{$smarty.const.WIKI_PKG_URL}edit_book.php?action=remove&structure_id={$channels[ix].structure_id}&tk={$gBitUser->mTicket}">{biticon ipackage="icons" iname="edit-delete" iexplain="remove"}</a>
+					<a href="{$smarty.const.WIKI_PKG_URL}edit_book.php?action=remove&structure_id={$channels[ix].structure_id}&tk={$gBitUser->mTicket}">{biticon ipackage="icons" iname="user-trash" iexplain="remove"}</a>
 				{/if}
 			</td>
 		</tr>

@@ -67,7 +67,7 @@
 
 		{if $gContent->mInfo.title ne 'SandBox' && !$gContent->isLocked()}
 			{if $gContent->isOwner() || $gContent->hasUserPermission( 'p_wiki_remove_page' )}
-				<a title="{tr}Remove this page{/tr}" href="{$smarty.const.WIKI_PKG_URL}remove_page.php?page_id={$gContent->mInfo.page_id}&amp;version=last">{biticon ipackage="icons" iname="edit-delete" iexplain="Delete"}</a>
+				<a title="{tr}Remove this page{/tr}" href="{$smarty.const.WIKI_PKG_URL}remove_page.php?page_id={$gContent->mInfo.page_id}&amp;version=last">{biticon ipackage="icons" iname="user-trash" iexplain="Delete"}</a>
 			{/if}
 		{/if}
 

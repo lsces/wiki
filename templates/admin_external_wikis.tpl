@@ -30,7 +30,7 @@
 <td>{$channels[user].name}</td>
 <td>{$channels[user].extwiki}</td>
 <td>
-   &nbsp;&nbsp;<a href="{$smarty.const.WIKI_PKG_URL}admin/admin_external_wikis.php?offset={$offset}&amp;sort_mode={$sort_mode}&amp;remove={$channels[user].extwiki_id}" onclick="return confirm('{tr}Are you sure you want to delete this external wiki?{/tr}')" title="Click here to delete this external wiki">{biticon ipackage="icons" iname="edit-delete" iexplain="remove"}</a>&nbsp;&nbsp;
+   &nbsp;&nbsp;<a href="{$smarty.const.WIKI_PKG_URL}admin/admin_external_wikis.php?offset={$offset}&amp;sort_mode={$sort_mode}&amp;remove={$channels[user].extwiki_id}" onclick="return confirm('{tr}Are you sure you want to delete this external wiki?{/tr}')" title="Click here to delete this external wiki">{biticon ipackage="icons" iname="user-trash" iexplain="remove"}</a>&nbsp;&nbsp;
    <a href="{$smarty.const.WIKI_PKG_URL}admin/admin_external_wikis.php?offset={$offset}&amp;sort_mode={$sort_mode}&amp;extwiki_id={$channels[user].extwiki_id}">{biticon ipackage="icons" iname="document-properties" iexplain="edit"}</a>
 </td>
 </tr>
