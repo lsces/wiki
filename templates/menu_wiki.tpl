@@ -5,10 +5,10 @@
 		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}index.php">{biticon ipackage="icons" iname="user-home" iexplain="`$smarty.const.WIKI_PKG_DIR|ucwords` Home" ilocation=menu}</a></li>
 	{/if}
 	{if $gBitUser->hasPermission( 'p_wiki_list_pages' )}
-		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}list_pages.php">{biticon ipackage="icons" iname="text-x-generic" iexplain="List Pages" ilocation=menu}</a></li>
+		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}list_pages.php">{biticon ipackage="icons" iname="view-list-text" iexplain="List Pages" ilocation=menu}</a></li>
 	{/if}
 	{if $gBitUser->hasPermission( 'p_wiki_create_page' )}
-		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}edit.php">{biticon ipackage="icons" iname="text-x-generic" iexplain="Create Page" ilocation=menu}</a></li>
+		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}edit.php">{biticon ipackage="icons" iname="view-list-text" iexplain="Create Page" ilocation=menu}</a></li>
 	{/if}
 	{if $gBitUser->hasPermission( 'p_wiki_list_pages' ) && $gBitSystem->isFeatureActive( 'wiki_books' )}
 		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}books.php">{biticon ipackage="icons" iname="help-browser" iexplain="`$smarty.const.WIKI_PKG_DIR|ucwords` Books" ilocation=menu}</a></li>
@@ -23,7 +23,7 @@
 		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}print_pages.php">{biticon ipackage="icons" iname="document-print"   iexplain="Print" ilocation=menu}</a></li>
 	{/if}
 	{if $gBitUser->hasPermission( 'p_wiki_list_pages' )}
-		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}rankings.php">{biticon ipackage="icons" iname="text-x-generic" iexplain="`$smarty.const.WIKI_PKG_DIR|ucwords` Rankings" ilocation=menu}</a></li>
+		<li><a class="item" href="{$smarty.const.WIKI_PKG_URL}rankings.php">{biticon ipackage="icons" iname="view-list-text" iexplain="`$smarty.const.WIKI_PKG_DIR|ucwords` Rankings" ilocation=menu}</a></li>
 	{/if}
 	{if $gBitSystem->isPackageActive( 'rss' )}
 	<li><a title="{tr}Wiki Update RSS Feed{/tr}" href="{$smarty.const.RSS_PKG_URL}index.php?pkg=wiki">{biticon ipackage="icons" iname="network-transmit" ipackage=rss iexplain="Changes Feed" ilocation=menu}</a></li>

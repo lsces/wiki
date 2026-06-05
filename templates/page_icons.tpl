@@ -20,7 +20,7 @@
 					{if $gContent->hasAdminPermission() || ($gContent->isOwner() && $gContent->hasUserPermission( 'p_wiki_lock_page' ) && $gBitSystem->isFeatureActive( 'wiki_usrlock' ))}
 						<a href="{$smarty.const.WIKI_PKG_URL}index.php?page_id={$gContent->mInfo.page_id}&amp;action=lock">{biticon ipackage="icons" iname="lock" iexplain="Lock this page"}</a>
 					{/if}
-					<a href="{$smarty.const.WIKI_PKG_URL}edit.php?page_id={$gContent->mInfo.page_id}">{biticon ipackage="icons" iname="document-properties" iexplain="Edit"}</a>
+					<a href="{$smarty.const.WIKI_PKG_URL}edit.php?page_id={$gContent->mInfo.page_id}">{biticon ipackage="icons" iname="edit" iexplain="Edit"}</a>
 				{/if}
 			{/if}
 

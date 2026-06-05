@@ -199,7 +199,7 @@
 						{/if}
 						{if $gBitUser->hasPermission( 'p_wiki_update_page' )}
 							<td class="actionicon">
-								<a href="{$smarty.const.WIKI_PKG_URL}edit.php?page_id={$listpages[changes].page_id}">{biticon ipackage="icons" iname="document-properties" iexplain="edit"}</a>
+								<a href="{$smarty.const.WIKI_PKG_URL}edit.php?page_id={$listpages[changes].page_id}">{biticon ipackage="icons" iname="edit" iexplain="edit"}</a>
 								{if $checkboxes_on eq 'y'} <input type="checkbox" name="checked[]" value="{$listpages[changes].page_id}" /> {/if}
 							</td>
 						{/if}
