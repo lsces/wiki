@@ -21,6 +21,7 @@ $gBitSystem->verifyFeature( 'wiki_backlinks' );
 
 // Get the page from the request var or default it to HomePage
 if ( empty($gContent->mPageName) ) {
+	$gBitSystem->fatalError( KernelTools::tra( "No page specified" ) );
 }
 // Now check permissions to access this page
 $gContent->verifyViewPermission();
