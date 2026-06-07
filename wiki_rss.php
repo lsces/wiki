@@ -12,6 +12,7 @@ require_once "../kernel/includes/setup_inc.php";
 $gBitSystem->verifyPackage( 'wiki' );
 $gBitSystem->verifyPackage( 'rss' );
 $gBitSystem->verifyFeature( 'wiki_rss' );
+require_once( RSS_PKG_INCLUDE_PATH.'rss_inc.php' );
 
 use Bitweaver\Wiki\BitPage;
 use Bitweaver\Rss\FeedItem;
