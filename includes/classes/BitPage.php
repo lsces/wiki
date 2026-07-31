@@ -219,6 +219,22 @@ class BitPage extends LibertyMime implements BitCacheable {
 	public function store( array &$pParamHash): bool {
 		$this->StartTrans();
 
+		try {
+			$this->storeInTrans( $pParamHash );
+			$this->CompleteTrans();
+		} catch( \Exception $e ) {
+			$this->RollbackTrans();
+			$this->mErrors['store'] = $e->getMessage();
+		}
+		return count( $this->mErrors ) == 0;
+	}
+
+	/**
+	 * Body of store(), run inside the StartTrans()/CompleteTrans() pair - split out so an
+	 * exception anywhere in here can be caught by store() and rolled back, instead of leaving
+	 * an open transaction if store() itself threw past a bare CompleteTrans().
+	 **/
+	private function storeInTrans( array &$pParamHash ): void {
 		if( $this->verify( $pParamHash ) && LibertyMime::store( $pParamHash ) ) {
 			$pParamHash['page_store']['wiki_page_size'] = !empty( $pParamHash['edit'] ) ? strlen( $pParamHash['edit'] ) : 0;
 
@@ -272,8 +288,6 @@ class BitPage extends LibertyMime implements BitCacheable {
 				}
 			}
 		}
-		$this->CompleteTrans();
-		return count( $this->mErrors ) == 0;
 	}
 
 	/**
