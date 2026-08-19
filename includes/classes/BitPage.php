@@ -589,21 +589,26 @@ class BitPage extends LibertyMime implements BitCacheable {
 	* @return array hash of content
 	*/
 	public function getBacklinks() {
+		global $gBitSystem;
 		$ret =  [];
 		if( $this->isValid() ) {
 			$to_title = $this->mInfo['title'];
 			$query = "SELECT `content_id`, `title`, `to_title`, url
 					  FROM ( SELECT lc.`content_id`, lc.`title`, lcl.`to_title`, 'wiki/' || lc.`title` AS url
-						FROM `".BIT_DB_PREFIX."liberty_content_links` lcl 
+						FROM `".BIT_DB_PREFIX."liberty_content_links` lcl
 						INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (lcl.`from_content_id` = lc.`content_id`)
 						LEFT JOIN `".BIT_DB_PREFIX."wiki_pages` wp ON (lcl.`from_content_id` = wp.`content_id`)
-						WHERE lc.`content_type_guid` = 'bitpage'
+						WHERE lc.`content_type_guid` = 'bitpage'";
+			if( $gBitSystem->isPackageActive( 'blogs' ) ) {
+				$query .= "
 						UNION ALL
 						SELECT lc.`content_id`, COALESCE( lc.`title`, CAST ( DATEADD( SECOND, bl.`publish_date`, timestamp '1/1/1970 00:00:00' ) AS DATE ) ) AS TITLE, lcb.`to_title`, 'blogs/post/' || BL.`post_id` AS url
 						FROM ".BIT_DB_PREFIX."liberty_content_links lcb
 						INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (lcb.`from_content_id` = lc.`content_id`)
 						LEFT JOIN `".BIT_DB_PREFIX."blog_posts` bl ON (lcb.`from_content_id` = bl.`content_id`)
-						WHERE lc.`content_type_guid` = 'bitblogpost'
+						WHERE lc.`content_type_guid` = 'bitblogpost'";
+			}
+			$query .= "
 					  )
 					  WHERE `to_title` = ?
 					  ORDER BY `title`";
