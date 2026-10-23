@@ -44,7 +44,7 @@ if( !$gBitUser->hasPermission( 'p_wiki_view_page' ) ) {
 	foreach( $feeds as $feed ) {
 		$item = new FeedItem();
 		$item->title = $feed['title'];
-		$item->link = BIT_BASE_URI.$wiki->getDisplayUrlfromHash( $feed['title'] );
+		$item->link = BIT_BASE_URI.BitPage::getDisplayUrlFromHash( $feed );
 		$item->description = BitPage::parseDataHash( $feed );
 
 		$item->date = ( int )$feed['last_modified'];
