@@ -32,7 +32,7 @@
 
 				<div class="form-group submit">
 					<input type="submit" class="btn btn-default" name="addpage" value="{tr}add page{/tr}" />
-					&nbsp;<input type="submit" class="btn btn-default" name="clearpages" value="{tr}clear pages{/tr}" />
+					<input type="submit" class="btn btn-default" name="clearpages" value="{tr}clear pages{/tr}" />
 				</div>
 			{/form}
 
