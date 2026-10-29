@@ -636,6 +636,11 @@ class BitPage extends LibertyMime implements BitCacheable {
 		return $ret;
 	}
 
+	/** What the wiki page list can sort by, on top of the content columns ('size' is renamed to wiki_page_size before the query). */
+	public static function getSortModeFields(): array {
+		return array_merge( parent::getSortModeFields(), [ 'page_id', 'wiki_page_size', 'edit_comment', 'flag', 'format_guid', 'hits', 'version' ] );
+	}
+
 	/**
 	 * getList
 	 *
@@ -735,7 +740,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 					LEFT OUTER JOIN `".BIT_DB_PREFIX."liberty_content_hits` lch ON (lc.`content_id` = lch.`content_id`)
 					$joinSql
 				$whereSql
-				ORDER BY ".$this->mDb->convertSortmode( $pListHash['sort_mode'] );
+				ORDER BY ".$this->convertSortMode( $pListHash['sort_mode'] );
 			$query_cant = "
 				SELECT COUNT(*)
 				FROM `".BIT_DB_PREFIX."wiki_pages` wp
@@ -762,7 +767,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 					LEFT OUTER JOIN `".BIT_DB_PREFIX."liberty_content_data` lcds ON (lc.`content_id` = lcds.`content_id` AND lcds.`data_type`='summary')
 					$joinSql
 				$whereSql
-				ORDER BY ".$this->mDb->convertSortmode( $pListHash['sort_mode'] );
+				ORDER BY ".$this->convertSortMode( $pListHash['sort_mode'] );
 			$query_cant = "
 				SELECT COUNT(*)
 				FROM `".BIT_DB_PREFIX."wiki_pages` wp
