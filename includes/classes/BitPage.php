@@ -65,7 +65,7 @@ class BitPage extends LibertyMime implements BitCacheable {
 		return array_merge( parent::__sleep(), [ 'mPageId', 'mPageName' ] );
 	}
 
-	public static function findContentIdByPageId( int $pPageId ) {
+	public static function findContentIdByPageId( $pPageId ) {
 		global $gBitDb;
 		$ret = null;
 		if( BitBase::verifyId( $pPageId ) ) {
