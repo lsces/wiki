@@ -7,7 +7,7 @@ Here you can generate static HTML files from Wiki Book.
 {if  $generated eq 'y'}
 <a href="{$smarty.const.BITHELP_PKG_URL}{$dir}/index.html">{tr}You can browse the generated WebHelp here{/tr}</a><br /><br />
 {/if}
-<form method="post" action="{$smarty.const.WIKI_PKG_URL}create_webhelp.php">
+{form action="{$smarty.const.WIKI_PKG_URL}create_webhelp.php"}
 <table class="panel">
   <tr>
   	<td>{tr}Structure{/tr}</td>
@@ -27,4 +27,4 @@ Here you can generate static HTML files from Wiki Book.
   	<td colspan="2"><input type="submit" class="btn btn-default" name="create" value="{tr}Create{/tr}" /></td>
   </tr>
 </table>
-</form>
+{/form}

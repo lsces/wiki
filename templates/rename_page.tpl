@@ -4,7 +4,7 @@
 	</div>
 
 	<div class="body">
-		<form action="{$smarty.const.WIKI_PKG_URL}rename_page.php" method="post">
+		{form action="{$smarty.const.WIKI_PKG_URL}rename_page.php"}
 			<input type="hidden" name="oldpage" value="{$page|escape}" />
 			<input type="hidden" name="page" value="{$page|escape}" />
 			<table class="panel">
@@ -14,6 +14,6 @@
 						<input type="submit" class="btn btn-default" name="rename" value="{tr}Rename{/tr}" />
 				</td></tr>
 			</table>
-		</form>
+		{/form}
 	</div><!-- end .body -->
 </div><!-- end .wiki -->

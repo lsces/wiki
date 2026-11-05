@@ -8,14 +8,14 @@
 <div class="body">
 
 <h2>{tr}Create/Edit External Wiki{/tr}</h2>
-<form action="{$smarty.const.WIKI_PKG_URL}admin/admin_external_wikis.php" method="post">
+{form action="{$smarty.const.WIKI_PKG_URL}admin/admin_external_wikis.php"}
 <input type="hidden" name="extwiki_id" value="{$extwiki_id|escape}" />
 <table class="panel">
 <tr><td>{tr}name{/tr}:</td><td><input type="text" maxlength="255" size="10" name="name" value="{$info.name|escape}" /></td></tr>
 <tr><td>{tr}URL (use $page to be replaced by the page name in the URL example: http://www.example.com/{$smarty.const.WIKI_PKG_URL}index.php?page=$page){/tr}:</td><td><input type="text" maxlength="255" size="40" name="extwiki" value="{$info.extwiki|escape}" /></td></tr>
 <tr class="panelsubmitrow"><td colspan="2"><input type="submit" class="btn btn-default" name="save" value="{tr}Save{/tr}" /></td></tr>
 </table>
-</form>
+{/form}
 
 <h2>{tr}External Wiki{/tr}</h2>
 <table class="table data">
